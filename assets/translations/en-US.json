@@ -1,0 +1,15 @@
+{
+  "profile": "Profile",
+  "home": "Home",
+  "run": "Run",
+  "events": "Events",
+  "languages": "Languages",
+  "onboarding": {
+    "appName": "Mingalar Run",
+    "clubName": "Running Club",
+    "title": "Run Your Journey.\nTrack Every Step.",
+    "description": "Measure distance, improve pace, reach your goals.",
+    "getStarted": "Get Started",
+    "alreadyHaveAccount": "Already have an account"
+  }
+}
