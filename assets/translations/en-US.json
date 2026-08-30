@@ -82,5 +82,20 @@
       "title": "People’s Park Weekend Run",
       "description": "Meet nearby runners for a friendly Sunday morning session."
     }
+  },
+  "runScreen": {
+    "title": "Explore Runs Activity",
+    "personalRun": "Personal Run",
+    "funRun": "Fun Run",
+    "challengeRun": "Challenge Run",
+    "startYourRun": "Start Your Run",
+    "motivation": "Track your progress and stay motivated",
+    "startRun": "Start Run",
+    "calendar": "Calendar",
+    "seeAll": "See All",
+    "thisWeek": "This week",
+    "completeRecord": "Complete Record",
+    "today": "Today",
+    "noRecord": "No Record"
   }
 }

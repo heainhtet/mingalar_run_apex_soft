@@ -21,4 +21,19 @@ class AssetsConstant {
       'assets/images/bottom_nav/runActiveIcon.svg';
   static const String eventsIcon = 'assets/images/bottom_nav/eventsIcon.svg';
   static const String profileIcon = 'assets/images/bottom_nav/profileIcon.svg';
+
+  /// Run activity stat icons
+  static const String runCal = 'assets/images/run/cal.svg';
+  static const String runClock = 'assets/images/run/clock.svg';
+  static const String runMapPin = 'assets/images/run/mapPin.svg';
+  static const String runShoe = 'assets/images/run/shoe.svg';
+
+  ///Profile
+  static const String listSetting = 'assets/images/profile/listSetting.svg';
+  static const String goldRank = 'assets/images/profile/goldRank.svg';
+
+  static const String totalRun = 'assets/images/profile/totalRun.svg';
+  static const String distance = 'assets/images/profile/distance.svg';
+  static const String calories = 'assets/images/profile/calories.svg';
+  static const String pace = 'assets/images/profile/pace.svg';
 }

@@ -10,11 +10,15 @@ class HomeSectionHeader extends StatelessWidget {
     required this.title,
     required this.actionLabel,
     this.onActionPressed,
+    this.titleColor,
+    this.actionColor,
   });
 
   final String title;
   final String actionLabel;
   final VoidCallback? onActionPressed;
+  final Color? titleColor;
+  final Color? actionColor;
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +30,7 @@ class HomeSectionHeader extends StatelessWidget {
             style: AppTextStyles.medium().black
                 .s(16)
                 .copyWith(
-                  color: AppColors.defaultBlackText,
+                  color: titleColor ?? AppColors.defaultBlackText,
                   height: 1,
                   letterSpacing: 0,
                 ),
@@ -43,7 +47,7 @@ class HomeSectionHeader extends StatelessWidget {
               style: AppTextStyles.medium()
                   .s(10)
                   .copyWith(
-                    color: AppColors.featureViewAllText,
+                    color: actionColor ?? AppColors.featureViewAllText,
                     height: 1.2,
                     letterSpacing: 0,
                   ),

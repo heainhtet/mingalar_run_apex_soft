@@ -81,6 +81,15 @@ abstract final class AppColors {
   ///Black
   static const Color black = Color(0xFF000000);
 
+  ///Qr Code
+  static const Color qrCodeColor = Color(0xFF1C1B1F);
+
+  /// Complete Record Color
+  static const Color completeRecordColor = Color(0xFF05FF62);
+
+  //Calender Card Border Color
+  static const Color calenderCardBorderColor = Color(0xFF0690E1);
+
   ///Theme mode check
   static bool isDark(BuildContext context) =>
       Theme.of(context).brightness == Brightness.dark;

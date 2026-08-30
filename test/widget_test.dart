@@ -1,30 +1,45 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
-import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
-
-import 'package:mingalar_un/main.dart';
+import 'package:mingalar_un/features/run/presentation/models/run_calendar_models.dart';
+import 'package:mingalar_un/features/run/presentation/providers/run_providers.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  group('Run calendar providers', () {
+    late ProviderContainer container;
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    setUp(() {
+      container = ProviderContainer(
+        overrides: [
+          runCurrentDateProvider.overrideWithValue(DateTime(2026, 8, 5, 12)),
+        ],
+      );
+    });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
+    tearDown(() => container.dispose());
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    test('builds two real calendar weeks beginning on Sunday', () {
+      final days = container.read(runCalendarDaysProvider);
+
+      expect(days, hasLength(14));
+      expect(days.first.date, DateTime(2026, 8, 2));
+      expect(days.last.date, DateTime(2026, 8, 15));
+      expect(
+        days.singleWhere((day) => day.date.day == 5).status,
+        RunCalendarStatus.today,
+      );
+    });
+
+    test('derives completed calendar days from modeled activities', () {
+      final days = container.read(runCalendarDaysProvider);
+
+      expect(
+        days.singleWhere((day) => day.date.day == 2).status,
+        RunCalendarStatus.completeRecord,
+      );
+      expect(
+        days.singleWhere((day) => day.date.day == 4).status,
+        RunCalendarStatus.completeRecord,
+      );
+    });
   });
 }
