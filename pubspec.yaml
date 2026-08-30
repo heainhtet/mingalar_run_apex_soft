@@ -43,6 +43,9 @@ dependencies:
   curved_labeled_navigation_bar: ^2.0.6
   flutter_svg: ^2.3.0
   qr_flutter: ^4.1.0
+  share_plus: ^13.3.0
+  hive_ce: ^2.19.3
+  hive_ce_flutter: ^2.3.4
 
 dev_dependencies:
   flutter_test:
@@ -56,6 +59,7 @@ dev_dependencies:
   flutter_lints: ^6.0.0
   flutter_launcher_icons: ^0.14.4
   flutter_native_splash: ^2.4.7
+  image: ^4.9.2
 
   # Code generation
   build_runner: ^2.4.15
@@ -84,6 +88,8 @@ flutter:
     - assets/images/home/feature.png
     - assets/images/home/event1.png
     - assets/images/events/
+    - assets/images/run/
+    - assets/images/profile/
     - assets/images/onboarding/
 
 

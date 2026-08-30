@@ -14,10 +14,16 @@ class RunActivityTile extends StatelessWidget {
     super.key,
     required this.activity,
     this.color = AppColors.topHeaderBackground,
+    this.showShareAction = false,
+    this.shareLabel = 'Share',
+    this.onShare,
   });
 
   final RunActivity activity;
   final Color color;
+  final bool showShareAction;
+  final String shareLabel;
+  final VoidCallback? onShare;
 
   @override
   Widget build(BuildContext context) {
@@ -31,15 +37,23 @@ class RunActivityTile extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            DateFormat('dd MMM yyyy, hh:mm a').format(activity.startedAt),
-            style: AppTextStyles.medium().white
-                .s(12)
-                .copyWith(
-                  color: AppColors.defaultPrimaryText,
-                  height: 16 / 12,
-                  letterSpacing: 0,
+          Row(
+            children: [
+              Expanded(
+                child: Text(
+                  DateFormat('dd MMM yyyy, hh:mm a').format(activity.startedAt),
+                  style: AppTextStyles.medium().white
+                      .s(12)
+                      .copyWith(
+                        color: AppColors.defaultPrimaryText,
+                        height: 16 / 12,
+                        letterSpacing: 0,
+                      ),
                 ),
+              ),
+              if (showShareAction)
+                _ShareAction(label: shareLabel, onPressed: onShare),
+            ],
           ),
 
           const Gap(12),
@@ -74,5 +88,44 @@ class RunActivityTile extends StatelessWidget {
   String _formatPace(Duration pace) {
     final seconds = pace.inSeconds.remainder(Duration.secondsPerMinute);
     return '${pace.inMinutes}:${seconds.toString().padLeft(2, '0')}';
+  }
+}
+
+class _ShareAction extends StatelessWidget {
+  const _ShareAction({required this.label, this.onPressed});
+
+  final String label;
+  final VoidCallback? onPressed;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+      onTap: onPressed,
+      borderRadius: BorderRadius.circular(6),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Text(
+              label,
+              style: AppTextStyles.semiBold().white
+                  .s(12)
+                  .copyWith(
+                    color: AppColors.defaultPrimaryText,
+                    height: 1,
+                    letterSpacing: 0,
+                  ),
+            ),
+            const Gap(4),
+            const Icon(
+              Icons.share_outlined,
+              size: 12,
+              color: AppColors.defaultPrimaryText,
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

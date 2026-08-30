@@ -30,10 +30,5 @@ class AssetsConstant {
 
   ///Profile
   static const String listSetting = 'assets/images/profile/listSetting.svg';
-  static const String goldRank = 'assets/images/profile/goldRank.svg';
-
-  static const String totalRun = 'assets/images/profile/totalRun.svg';
-  static const String distance = 'assets/images/profile/distance.svg';
-  static const String calories = 'assets/images/profile/calories.svg';
-  static const String pace = 'assets/images/profile/pace.svg';
+  static const String qrCode = 'assets/images/profile/qrCode.svg';
 }

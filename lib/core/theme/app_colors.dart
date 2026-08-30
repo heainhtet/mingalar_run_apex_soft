@@ -75,6 +75,30 @@ abstract final class AppColors {
   /// Profile page tile color
   static const Color profileTileColor = Color(0xFF5A89FF);
 
+  /// Profile summary icon gradients and foregrounds
+  static const Color totalRunIconGradientStart = Color(0x1A1819A7);
+  static const Color totalRunIconGradientEnd = Color(0x661819A7);
+  static const Color totalRunIconColor = Color(0xFF1819A7);
+
+  static const Color distanceIconGradientStart = Color(0x33FFA500);
+  static const Color distanceIconGradientEnd = Color(0x33FF8C00);
+  static const Color distanceIconColor = Color(0xFF0783FF);
+
+  static const Color caloriesIconGradientStart = Color(0x33FF4444);
+  static const Color caloriesIconGradientEnd = Color(0x33CC0000);
+  static const Color caloriesIconColor = Color(0xFFCC0000);
+
+  static const Color paceIconGradientStart = Color(0x267B61FF);
+  static const Color paceIconGradientEnd = Color(0x667B61FF);
+  static const Color paceIconColor = Color(0xFF4936DF);
+
+  /// Profile rank badge colors
+  static const Color rankRibbonColor = Color(0xFF0A43A8);
+  static const Color rankRibbonDarkColor = Color(0xFF052A6B);
+  static const Color rankGoldStart = Color(0xFFFFE994);
+  static const Color rankGoldEnd = Color(0xFFD3910B);
+  static const Color rankGoldBorder = Color(0xFFA96905);
+
   ///White
   static const Color white = Color(0xFFFFFFFF);
 

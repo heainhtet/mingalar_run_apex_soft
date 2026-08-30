@@ -97,5 +97,32 @@
     "completeRecord": "Complete Record",
     "today": "Today",
     "noRecord": "No Record"
+  },
+  "profileScreen": {
+    "title": "Profile",
+    "manageAccount": "Manage your account",
+    "settings": "Profile settings",
+    "myQr": "My QR",
+    "currentTier": "Current Tier",
+    "ionPoints": "ION Points",
+    "runSummary": "Run Summary",
+    "runHistory": "Run History",
+    "share": "Share",
+    "totalRuns": "Total Runs",
+    "longestDistance": "Longest Distance",
+    "totalCalories": "Total Calories",
+    "bestPace": "Best Pace",
+    "addInformation": "Add your information",
+    "tapQrToBegin": "Tap My QR to begin",
+    "profileInformation": "Profile information",
+    "yourQr": "Your Mingalar QR",
+    "name": "Name",
+    "phoneNumber": "Phone number",
+    "nameRequired": "Please enter your name",
+    "phoneRequired": "Please enter your phone number",
+    "saveAndGenerate": "Save & Generate QR",
+    "editInformation": "Edit information",
+    "sharedRunSubject": "My Mingalar Run activity",
+    "sharedRunTitle": "I completed a run with Mingalar Run"
   }
 }

@@ -21,7 +21,8 @@ class RunPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final calendarDays = ref.watch(runCalendarDaysProvider);
-    final activities = ref.watch(runActivitiesProvider);
+    final activities = ref.watch(runActivitiesProvider).value ?? const [];
+    final weekActivities = ref.watch(runWeekActivitiesProvider);
 
     return Scaffold(
       backgroundColor: Colors.transparent,
@@ -75,7 +76,7 @@ class RunPage extends ConsumerWidget {
                   const SizedBox(height: 24),
                   AnimatedListEntry(
                     index: 4,
-                    child: RunsWeekSection(activities: activities),
+                    child: RunsWeekSection(activities: weekActivities),
                   ),
                 ],
               ),
