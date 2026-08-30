@@ -18,7 +18,7 @@ class EventListTab extends ConsumerWidget {
 
     return ListView.separated(
       key: PageStorageKey(category),
-      padding: const EdgeInsets.fromLTRB(20, 16, 20, 120),
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 120),
       physics: const BouncingScrollPhysics(),
       itemCount: events.length,
       separatorBuilder: (_, _) => const SizedBox(height: 18),

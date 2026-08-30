@@ -25,11 +25,16 @@ class EventsPage extends StatelessWidget {
               subtitle: 'eventsScreen.subtitle'.tr(),
               icon: Icons.event_available_rounded,
             ),
-            const Padding(
-              padding: EdgeInsets.fromLTRB(20, 20, 20, 4),
+
+            Gap(20),
+
+            Padding(
+              padding: EdgeInsets.symmetric(horizontal: 20),
               child: EventCategoryTabBar(),
             ),
-            Gap(2),
+
+            Gap(20),
+
             const Expanded(
               child: TabBarView(
                 physics: BouncingScrollPhysics(),
