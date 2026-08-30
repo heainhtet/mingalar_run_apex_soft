@@ -1,10 +1,10 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 
+import '../../../../core/common/widgets/app_brand_header.dart';
 import '../../../../core/routers/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/onboarding_content_card.dart';
-import '../widgets/onboarding_header.dart';
 
 @RoutePage()
 class OnBoardingPage extends StatelessWidget {
@@ -36,7 +36,7 @@ class OnBoardingPage extends StatelessWidget {
                     right: 24,
                     child: _EntranceAnimation(
                       offset: Offset(0, -0.12),
-                      child: OnboardingHeader(),
+                      child: AppBrandHeader(),
                     ),
                   ),
                   Positioned(

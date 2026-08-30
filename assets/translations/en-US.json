@@ -11,5 +11,76 @@
     "description": "Measure distance, improve pace, reach your goals.",
     "getStarted": "Get Started",
     "alreadyHaveAccount": "Already have an account"
+  },
+  "homeScreen": {
+    "startYourRun": "Start Your Run",
+    "motivation": "Track your progress and stay motivated",
+    "startRunning": "Start Running",
+    "featuredChallenges": "Featured Challenges",
+    "events": "Events",
+    "showMore": "Show More",
+    "weekdays": {
+      "sun": "SUN",
+      "mon": "MON",
+      "tue": "TUE",
+      "wed": "WED",
+      "thu": "THU",
+      "fri": "FRI",
+      "sat": "SAT"
+    }
+  },
+  "challenges": {
+    "title": "Featured Challenges",
+    "subtitle": "Choose a goal, keep moving and build your running streak.",
+    "featured": "FEATURED",
+    "popular": "POPULAR",
+    "newLabel": "NEW",
+    "forest": {
+      "title": "Forest Five Challenge",
+      "description": "Complete five scenic kilometres and refresh your weekly routine."
+    },
+    "city": {
+      "title": "City Distance Builder",
+      "description": "Build endurance gradually with a two-week urban running goal."
+    },
+    "consistency": {
+      "title": "30-Day Consistency Run",
+      "description": "Create a sustainable running habit with achievable daily progress."
+    }
+  },
+  "eventsScreen": {
+    "title": "Running Events",
+    "subtitle": "Discover community runs and memorable races near you.",
+    "upcoming": "Upcoming",
+    "thisMonth": "This Month",
+    "nearby": "Nearby",
+    "open": "OPEN",
+    "limited": "LIMITED",
+    "free": "FREE",
+    "nearYou": "NEAR YOU",
+    "cityMarathon": {
+      "title": "Yangon City Marathon",
+      "description": "Run through the heart of the city with the local running community."
+    },
+    "forestRun": {
+      "title": "Highland Forest Run",
+      "description": "A refreshing route surrounded by trees and cool mountain air."
+    },
+    "communityRun": {
+      "title": "Mandalay Community Run",
+      "description": "A relaxed social run designed for every experience level."
+    },
+    "sunsetRun": {
+      "title": "Capital Sunset Run",
+      "description": "An evening route with an easy pace and a relaxed finish."
+    },
+    "lakeRun": {
+      "title": "Inya Lake Morning Run",
+      "description": "Start the weekend with a fresh community lap around the lake."
+    },
+    "weekendRun": {
+      "title": "People’s Park Weekend Run",
+      "description": "Meet nearby runners for a friendly Sunday morning session."
+    }
   }
 }

@@ -10,7 +10,7 @@ extension TextStyleHelpers on TextStyle {
   // Size Helper
   TextStyle s(double size) => copyWith(fontSize: size);
 
-  // Weight Helpers (Since we are using Manrope)
+  // Weight Helpers
   TextStyle get thin => copyWith(fontWeight: FontWeight.w100);
   TextStyle get light => copyWith(fontWeight: FontWeight.w300);
   TextStyle get regular => copyWith(fontWeight: FontWeight.w400);

@@ -1,9 +1,12 @@
 import 'package:auto_route/auto_route.dart';
+import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:gap/gap.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/utils/text_extensions.dart';
+import '../../../../core/common/widgets/discovery_page_header.dart';
+import '../models/event_preview.dart';
+import '../widgets/event_filter_bar.dart';
+import '../widgets/event_list_tab.dart';
 
 @RoutePage()
 class EventsPage extends StatelessWidget {
@@ -11,17 +14,33 @@ class EventsPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: Center(
-        child: Text(
-          "Events Page",
-          style: AppTextStyles.medium().white
-              .s(9)
-              .copyWith(
-                color: AppColors.onBoardingWelcomeText,
-                height: 1.4,
-                letterSpacing: 0,
+    return DefaultTabController(
+      length: EventCategory.values.length,
+      child: Scaffold(
+        backgroundColor: const Color(0xFFF7F8FC),
+        body: Column(
+          children: [
+            DiscoveryPageHeader(
+              title: 'eventsScreen.title'.tr(),
+              subtitle: 'eventsScreen.subtitle'.tr(),
+              icon: Icons.event_available_rounded,
+            ),
+            const Padding(
+              padding: EdgeInsets.fromLTRB(20, 20, 20, 4),
+              child: EventCategoryTabBar(),
+            ),
+            Gap(2),
+            const Expanded(
+              child: TabBarView(
+                physics: BouncingScrollPhysics(),
+                children: [
+                  EventListTab(category: EventCategory.upcoming),
+                  EventListTab(category: EventCategory.thisMonth),
+                  EventListTab(category: EventCategory.nearby),
+                ],
               ),
+            ),
+          ],
         ),
       ),
     );

@@ -76,6 +76,10 @@ flutter:
     - assets/fonts/Poppins/
     - assets/images/
     - assets/images/bottom_nav/
+    - assets/images/home/upIcon.svg
+    - assets/images/home/feature.png
+    - assets/images/home/event1.png
+    - assets/images/events/
     - assets/images/onboarding/
 
 
