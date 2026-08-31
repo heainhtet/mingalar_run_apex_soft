@@ -86,7 +86,7 @@ class _LegendDivider extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return ColoredBox(
-      color: AppColors.calenderCardBorderColor.withValues(alpha: 0.5),
+      color: Colors.transparent,
       child: const SizedBox(width: 1),
     );
   }

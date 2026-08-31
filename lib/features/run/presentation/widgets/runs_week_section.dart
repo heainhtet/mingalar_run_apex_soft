@@ -1,36 +1,37 @@
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 
-import '../../../../core/theme/app_colors.dart';
-import '../../../../core/theme/app_text_styles.dart';
-import '../../../../core/utils/text_extensions.dart';
-import '../models/run_calendar_models.dart';
-import 'run_activity_tile.dart';
+import '../../domain/entities/run_day_stat.dart';
+import 'run_activity_detail_dialog.dart';
+import 'run_day_tile.dart';
+import 'run_history_section_header.dart';
 
 class RunsWeekSection extends StatelessWidget {
-  const RunsWeekSection({super.key, required this.activities});
+  const RunsWeekSection({
+    super.key,
+    required this.days,
+    required this.onShowAll,
+  });
 
-  final List<RunActivity> activities;
+  final List<RunDayStat> days;
+  final VoidCallback onShowAll;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text(
-          'runScreen.thisWeek'.tr(),
-          style: AppTextStyles.semiBold().white
-              .s(18)
-              .copyWith(
-                color: AppColors.defaultPrimaryText,
-                height: 16 / 18,
-                letterSpacing: 0,
-              ),
+        RunHistorySectionHeader(
+          title: 'runScreen.thisWeek'.tr(),
+          onShowAll: onShowAll,
         ),
         const SizedBox(height: 12),
-        ...activities.expand(
-          (activity) => [
-            RunActivityTile(activity: activity),
+        ...days.expand(
+          (day) => [
+            RunDayTile(
+              day: day,
+              onTap: () => showRunActivityDetailDialog(context, day: day),
+            ),
             const SizedBox(height: 12),
           ],
         ),

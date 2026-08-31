@@ -1,7 +1,7 @@
-import 'package:flutter_riverpod/legacy.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../controllers/wrapper_controller.dart';
 
-final wrapperProvider = StateNotifierProvider<WrapperController, WrapperState>(
-  (ref) => WrapperController(),
+final wrapperProvider = NotifierProvider<WrapperController, WrapperState>(
+  WrapperController.new,
 );

@@ -1,28 +1,49 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 
+import '../../../../core/common/widgets/app_flushbar.dart';
+import '../../../../core/database/hive_database.dart';
+import '../../../../core/routers/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/logger.dart';
 import '../../../../core/utils/text_extensions.dart';
+import '../../../run/presentation/providers/run_providers.dart';
+import '../../../run/presentation/providers/run_session_provider.dart';
 import '../models/profile_models.dart';
 import '../providers/profile_providers.dart';
 import 'profile_information_form.dart';
 
-Future<void> showProfileQrDialog(
-  BuildContext context,
-  WidgetRef ref, {
-  bool editImmediately = false,
-}) async {
-  final profileState = await ref.read(profileProvider.future);
-  if (editImmediately || profileState.user == null) {
-    ref.read(profileProvider.notifier).beginEditing();
-  }
+enum ProfileDialogMode { editor, qr }
 
+Future<void> showProfileQrDialog(BuildContext context, WidgetRef ref) async {
+  final profile = await ref.read(profileProvider.future);
   if (!context.mounted) return;
+  return _showProfileDialog(
+    context,
+    mode: profile.user == null
+        ? ProfileDialogMode.editor
+        : ProfileDialogMode.qr,
+  );
+}
 
+Future<void> showProfileSettingsDialog(
+  BuildContext context,
+  WidgetRef ref,
+) async {
+  await ref.read(profileProvider.future);
+  if (!context.mounted) return;
+  return _showProfileDialog(context, mode: ProfileDialogMode.editor);
+}
+
+Future<void> _showProfileDialog(
+  BuildContext context, {
+  required ProfileDialogMode mode,
+}) {
   return showGeneralDialog<void>(
     context: context,
     barrierDismissible: true,
@@ -30,7 +51,7 @@ Future<void> showProfileQrDialog(
     barrierColor: AppColors.black.withAlpha(153),
     transitionDuration: const Duration(milliseconds: 360),
     pageBuilder: (context, animation, secondaryAnimation) {
-      return const ProfileQrDialog();
+      return ProfileQrDialog(mode: mode);
     },
     transitionBuilder: (context, animation, secondaryAnimation, child) {
       final curved = CurvedAnimation(
@@ -50,7 +71,9 @@ Future<void> showProfileQrDialog(
 }
 
 class ProfileQrDialog extends ConsumerStatefulWidget {
-  const ProfileQrDialog({super.key});
+  const ProfileQrDialog({super.key, required this.mode});
+
+  final ProfileDialogMode mode;
 
   @override
   ConsumerState<ProfileQrDialog> createState() => _ProfileQrDialogState();
@@ -79,66 +102,38 @@ class _ProfileQrDialogState extends ConsumerState<ProfileQrDialog> {
   @override
   Widget build(BuildContext context) {
     final state = ref.watch(profileProvider).value ?? const ProfileState();
-    final showForm = state.user == null || state.isEditing;
+    final showsEditor = widget.mode == ProfileDialogMode.editor;
 
-    return PopScope(
-      onPopInvokedWithResult: (didPop, result) {
-        if (didPop && state.isEditing) {
-          ref.read(profileProvider.notifier).cancelEditing();
-        }
-      },
-      child: Dialog(
-        insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-        backgroundColor: AppColors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
-        child: ConstrainedBox(
-          constraints: const BoxConstraints(maxWidth: 380),
-          child: Padding(
-            padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _DialogHeader(
-                  title: showForm
-                      ? 'profileScreen.profileInformation'.tr()
-                      : 'profileScreen.yourQr'.tr(),
-                  onClose: () => Navigator.of(context).pop(),
-                ),
-                const Gap(20),
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  switchInCurve: Curves.easeOutCubic,
-                  switchOutCurve: Curves.easeInCubic,
-                  transitionBuilder: (child, animation) {
-                    return FadeTransition(
-                      opacity: animation,
-                      child: ScaleTransition(
-                        scale: Tween<double>(
-                          begin: 0.96,
-                          end: 1,
-                        ).animate(animation),
-                        child: child,
-                      ),
-                    );
-                  },
-                  child: showForm
-                      ? ProfileInformationForm(
-                          key: const ValueKey('profile-form'),
-                          formKey: _formKey,
-                          nameController: _nameController,
-                          phoneController: _phoneController,
-                          isSaving: state.isSaving,
-                          onSave: _save,
-                        )
-                      : _QrContent(
-                          key: const ValueKey('profile-qr'),
-                          user: state.user!,
-                          onEdit: () =>
-                              ref.read(profileProvider.notifier).beginEditing(),
-                        ),
-                ),
-              ],
-            ),
+    return Dialog(
+      insetPadding: const EdgeInsets.symmetric(horizontal: 24),
+      backgroundColor: AppColors.white,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 380),
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(24, 20, 24, 24),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _DialogHeader(
+                title: showsEditor
+                    ? 'profileScreen.profileInformation'.tr()
+                    : 'profileScreen.yourQr'.tr(),
+                onClose: () => Navigator.of(context).pop(),
+              ),
+              const Gap(20),
+              if (showsEditor)
+                ProfileInformationForm(
+                  formKey: _formKey,
+                  nameController: _nameController,
+                  phoneController: _phoneController,
+                  isSaving: state.isSaving,
+                  onSave: _save,
+                  onDeleteAccount: state.user == null ? null : _deleteAccount,
+                )
+              else
+                _QrContent(user: state.user!),
+            ],
           ),
         ),
       ),
@@ -147,13 +142,69 @@ class _ProfileQrDialogState extends ConsumerState<ProfileQrDialog> {
 
   Future<void> _save() async {
     if (!(_formKey.currentState?.validate() ?? false)) return;
-
     await ref
         .read(profileProvider.notifier)
         .saveProfile(
           name: _nameController.text,
           phoneNumber: _phoneController.text,
         );
+    if (mounted) Navigator.of(context).pop();
+  }
+
+  Future<void> _deleteAccount() async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        backgroundColor: AppColors.white,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        title: Text(
+          'profileScreen.deleteAccountTitle'.tr(),
+          style: AppTextStyles.semiBold()
+              .s(18)
+              .copyWith(color: AppColors.cardLabelText, height: 1.25),
+        ),
+        content: Text(
+          'profileScreen.deleteAccountMessage'.tr(),
+          style: AppTextStyles.regular()
+              .s(14)
+              .copyWith(color: AppColors.cardDescriptionText, height: 1.45),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: Text('runScreen.cancel'.tr()),
+          ),
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(
+              'profileScreen.deleteEverything'.tr(),
+              style: const TextStyle(color: AppColors.caloriesIconColor),
+            ),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      await ref.read(runSessionProvider.notifier).reset();
+      await HiveDatabase.clearAllUserData();
+      ref.invalidate(profileProvider);
+      ref.invalidate(runActivitiesProvider);
+      if (!mounted) return;
+      final router = context.router;
+      Navigator.of(context, rootNavigator: true).pop();
+      router.replaceAll([const OnBoardingRoute()]);
+    } catch (error, stackTrace) {
+      logger.e(
+        'Unable to clear local user data',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      if (mounted) {
+        AppFlushbar.error(context, 'profileScreen.deleteFailed'.tr());
+      }
+    }
   }
 }
 
@@ -191,10 +242,9 @@ class _DialogHeader extends StatelessWidget {
 }
 
 class _QrContent extends StatelessWidget {
-  const _QrContent({super.key, required this.user, required this.onEdit});
+  const _QrContent({required this.user});
 
   final UserProfile user;
-  final VoidCallback onEdit;
 
   @override
   Widget build(BuildContext context) {
@@ -249,15 +299,6 @@ class _QrContent extends StatelessWidget {
                 height: 20 / 14,
                 letterSpacing: -0.15,
               ),
-        ),
-        const Gap(12),
-        TextButton.icon(
-          onPressed: onEdit,
-          icon: const Icon(Icons.edit_outlined, size: 18),
-          label: Text('profileScreen.editInformation'.tr()),
-          style: TextButton.styleFrom(
-            foregroundColor: AppColors.tabIndicatorColor,
-          ),
         ),
       ],
     );

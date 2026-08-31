@@ -2,6 +2,16 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 	<dict>
+		<key>NSCameraUsageDescription</key>
+		<string>Mingalar Run uses the camera to scan another runner's profile QR code.</string>
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Mingalar Run uses your location to track running distance and pace accurately.</string>
+		<key>NSMotionUsageDescription</key>
+		<string>Mingalar Run uses motion activity to count steps and identify walking, jogging, and running.</string>
+		<key>UIBackgroundModes</key>
+		<array>
+			<string>location</string>
+		</array>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>
 		<key>CFBundleDisplayName</key>

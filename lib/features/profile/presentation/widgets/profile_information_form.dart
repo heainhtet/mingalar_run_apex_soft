@@ -15,6 +15,7 @@ class ProfileInformationForm extends StatelessWidget {
     required this.phoneController,
     required this.isSaving,
     required this.onSave,
+    this.onDeleteAccount,
   });
 
   final GlobalKey<FormState> formKey;
@@ -22,6 +23,7 @@ class ProfileInformationForm extends StatelessWidget {
   final TextEditingController phoneController;
   final bool isSaving;
   final VoidCallback onSave;
+  final VoidCallback? onDeleteAccount;
 
   @override
   Widget build(BuildContext context) {
@@ -58,6 +60,18 @@ class ProfileInformationForm extends StatelessWidget {
             isLoading: isSaving,
             onPressed: onSave,
           ),
+          if (onDeleteAccount != null) ...[
+            const Gap(12),
+            PrimaryButtonWidget(
+              text: 'profileScreen.deleteAccount'.tr(),
+              height: 48,
+              borderRadius: 24,
+              variant: PrimaryButtonVariant.outlined,
+              borderColor: AppColors.caloriesIconColor,
+              textColor: AppColors.caloriesIconColor,
+              onPressed: onDeleteAccount,
+            ),
+          ],
         ],
       ),
     );

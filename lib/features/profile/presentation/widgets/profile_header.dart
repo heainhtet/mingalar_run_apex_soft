@@ -9,8 +9,9 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/text_extensions.dart';
 
 class ProfileHeader extends StatelessWidget {
-  const ProfileHeader({super.key, this.onSettingsPressed});
+  const ProfileHeader({super.key, this.onScanPressed, this.onSettingsPressed});
 
+  final VoidCallback? onScanPressed;
   final VoidCallback? onSettingsPressed;
 
   @override
@@ -45,14 +46,28 @@ class ProfileHeader extends StatelessWidget {
             ),
           ],
         ),
-        IconButton(
-          onPressed: onSettingsPressed,
-          tooltip: 'profileScreen.settings'.tr(),
-          icon: SvgPicture.asset(
-            AssetsConstant.listSetting,
-            width: 24,
-            height: 24,
-          ),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            IconButton(
+              onPressed: onScanPressed,
+              tooltip: 'profileScreen.scanQr'.tr(),
+              icon: const Icon(
+                Icons.qr_code_scanner_rounded,
+                size: 24,
+                color: AppColors.defaultPrimaryText,
+              ),
+            ),
+            IconButton(
+              onPressed: onSettingsPressed,
+              tooltip: 'profileScreen.settings'.tr(),
+              icon: SvgPicture.asset(
+                AssetsConstant.listSetting,
+                width: 24,
+                height: 24,
+              ),
+            ),
+          ],
         ),
       ],
     );

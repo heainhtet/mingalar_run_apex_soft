@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/common/widgets/animated_list_entry.dart';
+import '../../../../core/routers/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../run/presentation/providers/run_providers.dart';
 import '../providers/profile_providers.dart';
@@ -22,7 +23,7 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileState = ref.watch(profileProvider).value;
     final summary = ref.watch(profileSummaryProvider);
-    final activities = ref.watch(runActivitiesProvider).value ?? const [];
+    final lastSevenDays = ref.watch(runLastSevenDaysProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
       value: const SystemUiOverlayStyle(
@@ -52,11 +53,10 @@ class ProfilePage extends ConsumerWidget {
                 AnimatedListEntry(
                   index: 0,
                   child: ProfileHeader(
-                    onSettingsPressed: () => showProfileQrDialog(
-                      context,
-                      ref,
-                      editImmediately: true,
-                    ),
+                    onScanPressed: () =>
+                        context.router.push(const ProfileQrScannerRoute()),
+                    onSettingsPressed: () =>
+                        showProfileSettingsDialog(context, ref),
                   ),
                 ),
                 const Gap(22),
@@ -75,7 +75,11 @@ class ProfilePage extends ConsumerWidget {
                 const Gap(44),
                 AnimatedListEntry(
                   index: 3,
-                  child: ProfileRunHistorySection(activities: activities),
+                  child: ProfileRunHistorySection(
+                    days: lastSevenDays,
+                    onShowAll: () =>
+                        context.router.push(const RunHistoryRoute()),
+                  ),
                 ),
               ],
             ),

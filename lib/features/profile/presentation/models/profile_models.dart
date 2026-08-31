@@ -19,20 +19,14 @@ class ProfileSummaryMetric {
 }
 
 class ProfileState {
-  const ProfileState({
-    this.user,
-    this.isEditing = false,
-    this.isSaving = false,
-  });
+  const ProfileState({this.user, this.isSaving = false});
 
   final UserProfile? user;
-  final bool isEditing;
   final bool isSaving;
 
-  ProfileState copyWith({UserProfile? user, bool? isEditing, bool? isSaving}) {
+  ProfileState copyWith({UserProfile? user, bool? isSaving}) {
     return ProfileState(
       user: user ?? this.user,
-      isEditing: isEditing ?? this.isEditing,
       isSaving: isSaving ?? this.isSaving,
     );
   }

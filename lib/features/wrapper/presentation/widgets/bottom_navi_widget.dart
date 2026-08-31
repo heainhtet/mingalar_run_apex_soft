@@ -31,7 +31,6 @@ class BottomNaviWidget extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final selectedIndex = ref.watch(wrapperProvider).index;
-
     final labels = ['home'.tr(), 'run'.tr(), 'events'.tr(), 'profile'.tr()];
     final labelStyle = AppTextStyles.medium().white
         .s(10)
@@ -39,8 +38,8 @@ class BottomNaviWidget extends ConsumerWidget {
 
     return CurvedNavigationBar(
       index: selectedIndex,
-      height: 65,
       maxWidth: MediaQuery.of(context).size.width,
+      height: 65,
       color: AppColors.tabIndicatorColor,
       backgroundColor: AppColors.defaultPrimaryText,
       buttonBackgroundColor: AppColors.tabIndicatorColor,

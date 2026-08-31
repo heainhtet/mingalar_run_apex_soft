@@ -1,4 +1,6 @@
 class AssetsConstant {
+  static const String appLogo = 'assets/branding/app_logo_display.png';
+
   static const String onboardingRunner =
       'assets/images/onboarding/onboarding_runner.png';
 

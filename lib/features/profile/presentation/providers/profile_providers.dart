@@ -1,5 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/utils/logger.dart';
+import '../../../../core/utils/measurement_formatter.dart';
 import '../../../run/domain/entities/run_activity.dart';
 import '../../../run/presentation/providers/run_providers.dart';
 import '../../data/repositories/hive_profile_repository.dart';
@@ -21,16 +23,6 @@ class ProfileController extends AsyncNotifier<ProfileState> {
   Future<ProfileState> build() async {
     final user = await _repository.getProfile();
     return ProfileState(user: user);
-  }
-
-  void beginEditing() {
-    final current = state.value ?? const ProfileState();
-    state = AsyncData(current.copyWith(isEditing: true));
-  }
-
-  void cancelEditing() {
-    final current = state.value ?? const ProfileState();
-    state = AsyncData(current.copyWith(isEditing: false, isSaving: false));
   }
 
   Future<void> saveProfile({
@@ -55,8 +47,14 @@ class ProfileController extends AsyncNotifier<ProfileState> {
     try {
       await _repository.saveProfile(user);
       state = AsyncData(ProfileState(user: user));
+      logger.i('Local runner profile saved');
     } catch (error, stackTrace) {
       state = AsyncError(error, stackTrace);
+      logger.e(
+        'Unable to save local runner profile',
+        error: error,
+        stackTrace: stackTrace,
+      );
       rethrow;
     }
   }
@@ -64,12 +62,16 @@ class ProfileController extends AsyncNotifier<ProfileState> {
   Future<void> deleteProfile() async {
     await _repository.deleteProfile();
     state = const AsyncData(ProfileState());
+    logger.i('Local runner profile deleted');
   }
 }
 
 final profileSummaryProvider = Provider<List<ProfileSummaryMetric>>((ref) {
   final activities = ref.watch(runActivitiesProvider).value ?? const [];
   final summary = _RunSummary.fromActivities(activities);
+  final longestDistance = MeasurementFormatter.distance(
+    summary.longestDistanceKilometers,
+  );
 
   return [
     ProfileSummaryMetric(
@@ -80,8 +82,8 @@ final profileSummaryProvider = Provider<List<ProfileSummaryMetric>>((ref) {
     ProfileSummaryMetric(
       type: ProfileSummaryType.longestDistance,
       labelKey: 'profileScreen.longestDistance',
-      value: _formatDistance(summary.longestDistanceKilometers),
-      unit: 'km',
+      value: longestDistance.value,
+      unit: longestDistance.unit,
     ),
     ProfileSummaryMetric(
       type: ProfileSummaryType.totalCalories,
@@ -134,11 +136,6 @@ class _RunSummary {
   final double longestDistanceKilometers;
   final int totalCalories;
   final Duration? bestPace;
-}
-
-String _formatDistance(double distance) {
-  if (distance == 0) return '0';
-  return distance.toStringAsFixed(1);
 }
 
 String _formatPace(Duration? pace) {

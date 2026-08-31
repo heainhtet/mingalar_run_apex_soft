@@ -102,6 +102,24 @@ void main() {
       expect(payload['ionPoints'], profile.ionPoints);
     });
 
+    test('decodes only valid Mingalar Run profile QR payloads', () {
+      const profile = UserProfile(
+        name: 'Mya Mya',
+        phoneNumber: '09 123 456 789',
+        tier: 'Gold',
+        ionPoints: 591,
+      );
+
+      final decoded = UserProfile.tryParseQrPayload(profile.qrPayload);
+
+      expect(decoded?.name, profile.name);
+      expect(decoded?.phoneNumber, profile.phoneNumber);
+      expect(decoded?.tier, profile.tier);
+      expect(decoded?.ionPoints, profile.ionPoints);
+      expect(UserProfile.tryParseQrPayload('not-json'), isNull);
+      expect(UserProfile.tryParseQrPayload('{"type":"unrelated_qr"}'), isNull);
+    });
+
     test('saves trimmed profile information without setState', () async {
       final repository = InMemoryProfileRepository(
         initialProfile: const UserProfile(
@@ -118,9 +136,6 @@ void main() {
 
       await container.read(profileProvider.future);
       final controller = container.read(profileProvider.notifier);
-      controller.beginEditing();
-
-      expect(container.read(profileProvider).requireValue.isEditing, isTrue);
 
       await controller.saveProfile(
         name: '  Mya Mya  ',
@@ -129,7 +144,6 @@ void main() {
 
       final state = container.read(profileProvider).requireValue;
       expect(state.isSaving, isFalse);
-      expect(state.isEditing, isFalse);
       expect(state.user?.name, 'Mya Mya');
       expect(state.user?.phoneNumber, '09 123 456 789');
       expect(state.user?.tier, 'Gold');

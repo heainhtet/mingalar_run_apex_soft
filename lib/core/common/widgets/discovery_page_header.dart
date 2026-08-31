@@ -20,8 +20,7 @@ class DiscoveryPageHeader extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 190,
+    return DecoratedBox(
       decoration: const BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
@@ -35,24 +34,24 @@ class DiscoveryPageHeader extends StatelessWidget {
         child: Padding(
           padding: EdgeInsets.fromLTRB(20, 0, 20, 24),
           child: Column(
+            mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              if (showBackButton)
-                IconButton(
+              Visibility(
+                visible: showBackButton,
+                maintainAnimation: true,
+                maintainSize: true,
+                maintainState: true,
+                child: IconButton(
                   onPressed: () => Navigator.maybePop(context),
                   padding: EdgeInsets.zero,
-                  constraints: const BoxConstraints.tightFor(
-                    width: 40,
-                    height: 40,
-                  ),
                   icon: const Icon(
                     Icons.arrow_back_ios_new_rounded,
                     color: AppColors.defaultPrimaryText,
                     size: 20,
                   ),
-                )
-              else
-                const SizedBox(height: 40),
+                ),
+              ),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

@@ -52,7 +52,7 @@ class ExploreRunsHeader extends ConsumerWidget {
                     label: _tabLabels[index].tr().toUpperCase(),
                     isSelected: index == selectedIndex,
                     onTap: () {
-                      ref.read(selectedRunTabProvider.notifier).state = index;
+                      ref.read(selectedRunTabProvider.notifier).select(index);
                       onTabSelected?.call(index);
                     },
                   );

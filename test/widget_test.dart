@@ -40,17 +40,26 @@ void main() {
 
     tearDown(() => container.dispose());
 
-    test('builds two real calendar weeks beginning on Sunday', () async {
+    test('builds previous and current calendar weeks from Sunday', () async {
       await container.read(runActivitiesProvider.future);
       final days = container.read(runCalendarDaysProvider);
 
       expect(days, hasLength(14));
-      expect(days.first.date, DateTime(2026, 8, 2));
-      expect(days.last.date, DateTime(2026, 8, 15));
+      expect(days.first.date, DateTime(2026, 7, 26));
+      expect(days.last.date, DateTime(2026, 8, 8));
       expect(
         days.singleWhere((day) => day.date.day == 5).status,
         RunCalendarStatus.today,
       );
+    });
+
+    test('builds every day in the real current month', () async {
+      await container.read(runActivitiesProvider.future);
+      final days = container.read(runCurrentMonthCalendarDaysProvider);
+
+      expect(days, hasLength(31));
+      expect(days.first.date, DateTime(2026, 8, 1));
+      expect(days.last.date, DateTime(2026, 8, 31));
     });
 
     test('derives completed calendar days from stored activities', () async {
@@ -85,6 +94,13 @@ void main() {
       expect(saved.distanceKilometers, 5.0);
       expect(saved.steps, 6200);
       expect(saved.pacePerKilometer, const Duration(minutes: 5));
+      expect(
+        container
+            .read(runCurrentMonthCalendarDaysProvider)
+            .singleWhere((day) => day.date.day == 5)
+            .status,
+        RunCalendarStatus.completeRecord,
+      );
     });
   });
 }

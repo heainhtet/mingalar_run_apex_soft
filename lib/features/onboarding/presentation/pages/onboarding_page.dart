@@ -1,17 +1,19 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/common/widgets/app_brand_header.dart';
+import '../../../../core/database/app_preferences.dart';
 import '../../../../core/routers/app_router.gr.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../widgets/onboarding_content_card.dart';
 
 @RoutePage()
-class OnBoardingPage extends StatelessWidget {
+class OnBoardingPage extends ConsumerWidget {
   const OnBoardingPage({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Scaffold(
       body: DecoratedBox(
         decoration: const BoxDecoration(
@@ -47,8 +49,8 @@ class OnBoardingPage extends StatelessWidget {
                     child: _EntranceAnimation(
                       offset: const Offset(0, 0.06),
                       child: OnboardingContentCard(
-                        onGetStarted: () => _continueToApp(context),
-                        onSignIn: () => _continueToApp(context),
+                        onGetStarted: () => _continueToApp(context, ref),
+                        onSignIn: () => _continueToApp(context, ref),
                       ),
                     ),
                   ),
@@ -61,7 +63,9 @@ class OnBoardingPage extends StatelessWidget {
     );
   }
 
-  void _continueToApp(BuildContext context) {
+  Future<void> _continueToApp(BuildContext context, WidgetRef ref) async {
+    await ref.read(appPreferencesProvider).completeOnboarding();
+    if (!context.mounted) return;
     context.router.replaceAll([const WrapperRoute()]);
   }
 }
