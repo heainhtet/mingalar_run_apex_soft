@@ -8,6 +8,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'core/routers/app_router.dart';
 import 'core/database/hive_database.dart';
 import 'core/theme/app_colors.dart';
+import 'core/utils/app_platform.dart';
 import 'core/utils/logger.dart';
 
 final router = AppRouter();
@@ -31,7 +32,9 @@ Future<void> main() async {
   };
   await EasyLocalization.ensureInitialized();
   await HiveDatabase.initialize();
-  logger.i('Mingalar Run application initialized');
+  logger.i(
+    'Mingalar Run application initialized on ${AppPlatform.operatingSystem}',
+  );
 
   runApp(
     ProviderScope(

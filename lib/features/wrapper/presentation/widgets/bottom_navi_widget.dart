@@ -7,6 +7,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
+import '../../../../core/utils/app_platform.dart';
 import '../../../../core/constants/assets_constant.dart';
 import '../../../../core/utils/text_extensions.dart';
 import '../providers/wrapper_provider.dart';
@@ -39,7 +40,7 @@ class BottomNaviWidget extends ConsumerWidget {
     return CurvedNavigationBar(
       index: selectedIndex,
       maxWidth: MediaQuery.of(context).size.width,
-      height: 65,
+      height: AppPlatform.isIOS ? 80 : 65,
       color: AppColors.tabIndicatorColor,
       backgroundColor: AppColors.defaultPrimaryText,
       buttonBackgroundColor: AppColors.tabIndicatorColor,

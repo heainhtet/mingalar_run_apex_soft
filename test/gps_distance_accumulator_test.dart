@@ -27,10 +27,15 @@ void main() {
     );
   }
 
-  test('accepts plausible movement with GPS speed evidence', () {
+  test('accepts plausible GPS movement during confirmed motion', () {
     final tracker = GpsDistanceAccumulator();
     tracker.add(
-      frame(latitude: latitude, longitude: longitude, at: start, speed: 1.4),
+      frame(
+        latitude: latitude,
+        longitude: longitude,
+        at: start,
+        pedestrian: PedestrianState.walking,
+      ),
     );
 
     final distance = tracker.add(
@@ -38,7 +43,7 @@ void main() {
         latitude: latitude + 0.0001,
         longitude: longitude,
         at: start.add(const Duration(seconds: 8)),
-        speed: 1.4,
+        pedestrian: PedestrianState.walking,
       ),
     );
 

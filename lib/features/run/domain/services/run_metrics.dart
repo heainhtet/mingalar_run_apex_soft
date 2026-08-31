@@ -2,7 +2,6 @@ import '../entities/run_stage.dart';
 
 abstract final class RunMetrics {
   static const double defaultWeightKg = 70;
-  static const double defaultStrideMeters = 0.75;
 
   static Duration? paceFor(double distanceKilometers, Duration elapsed) {
     if (distanceKilometers <= 0 || elapsed <= Duration.zero) return null;
@@ -23,12 +22,4 @@ abstract final class RunMetrics {
 
   static int caloriesFor(RunStage stage, Duration elapsed) =>
       caloriesExactFor(stage, elapsed).round();
-
-  static double distanceKilometersForSteps(
-    int steps, {
-    double strideMeters = defaultStrideMeters,
-  }) {
-    if (steps <= 0 || !strideMeters.isFinite || strideMeters <= 0) return 0;
-    return steps * strideMeters / 1000;
-  }
 }

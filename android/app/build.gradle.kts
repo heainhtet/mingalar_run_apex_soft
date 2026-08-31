@@ -5,6 +5,12 @@ plugins {
     id("dev.flutter.flutter-gradle-plugin")
 }
 
+dependencies {
+    // Used directly by the native motion adapter for conservative activity
+    // confidence. Geolocator also uses this Play Services module for GPS.
+    implementation("com.google.android.gms:play-services-location:21.2.0")
+}
+
 android {
     namespace = "com.example.mingalar_run"
     compileSdk = flutter.compileSdkVersion

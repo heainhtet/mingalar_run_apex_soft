@@ -6,6 +6,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/common/widgets/app_confirmation_dialog.dart';
 import '../../../../core/theme/app_colors.dart';
+import '../../../../core/utils/app_platform.dart';
 import '../../../../core/utils/logger.dart';
 import '../../../events/presentation/pages/events_page.dart';
 import '../../../home/presentation/pages/home_page.dart';
@@ -75,6 +76,8 @@ class _WrapperPageState extends ConsumerState<WrapperPage>
         ),
         child: SafeArea(
           top: false,
+          bottom: !AppPlatform.isIOS,
+          // bottom: false,
           child: Scaffold(
             backgroundColor: AppColors.white,
             extendBody: true,

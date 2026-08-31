@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
+import '../../../../core/utils/app_platform.dart';
+
 class BottomNavItemContent extends StatelessWidget {
   const BottomNavItemContent({
     super.key,
@@ -18,7 +20,10 @@ class BottomNavItemContent extends StatelessWidget {
     return SizedBox(
       width: 44,
       child: Padding(
-        padding: const EdgeInsets.all(4),
+        padding: EdgeInsets.symmetric(
+          horizontal: 4,
+          vertical: AppPlatform.isIOS ? 10 : 4,
+        ),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           mainAxisSize: MainAxisSize.min,

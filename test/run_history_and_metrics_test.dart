@@ -138,7 +138,7 @@ void main() {
   );
 
   group('RunMetrics', () {
-    test('derives pace, active calories, and stride distance', () {
+    test('derives pace and active calories', () {
       const elapsed = Duration(minutes: 30);
       const distance = 5.0;
       final pace = RunMetrics.paceFor(distance, elapsed);
@@ -146,7 +146,6 @@ void main() {
 
       expect(pace, const Duration(minutes: 6));
       expect(calories, closeTo(360, 1));
-      expect(RunMetrics.distanceKilometersForSteps(4000), closeTo(3, 0.001));
     });
   });
 

@@ -131,7 +131,7 @@ void main() {
       expect(container.read(runSessionProvider).status, RunSessionStatus.idle);
     });
 
-    test('accumulates real distance from GPS coordinates', () async {
+    test('accumulates GPS distance only during confirmed motion', () async {
       final sensor = FakeRunSensorService();
       final container = ProviderContainer(
         overrides: [
@@ -156,6 +156,10 @@ void main() {
           longitude: 96.1440,
           speedMetersPerSecond: 0.0,
           accuracyMeters: 5,
+          steps: 3,
+          pedestrianStatus: PedestrianState.walking,
+          hasStepData: true,
+          stepSource: StepDataSource.nativeMotion,
         ),
       );
       await pumpEventQueue();
@@ -166,6 +170,10 @@ void main() {
           longitude: 96.1440,
           speedMetersPerSecond: 1.4,
           accuracyMeters: 5,
+          steps: 3,
+          pedestrianStatus: PedestrianState.walking,
+          hasStepData: true,
+          stepSource: StepDataSource.nativeMotion,
         ),
       );
       await pumpEventQueue();
@@ -173,7 +181,7 @@ void main() {
       final state = container.read(runSessionProvider);
       expect(state.distanceKilometers, greaterThan(0));
       expect(state.distanceKilometers, lessThan(1));
-      expect(state.stage, RunStage.stopped);
+      expect(state.stage, RunStage.walking);
     });
 
     test(
@@ -301,11 +309,11 @@ void main() {
         final state = container.read(runSessionProvider);
         expect(state.stage, RunStage.walking);
         expect(state.steps, 3);
-        expect(state.distanceKilometers, closeTo(0.00225, 0.000001));
+        expect(state.distanceKilometers, 0);
       },
     );
 
-    test('GPS distance never fabricates step events', () async {
+    test('GPS distance never fabricates extra step events', () async {
       final sensor = FakeRunSensorService();
       final container = ProviderContainer(
         overrides: [
@@ -327,6 +335,10 @@ void main() {
           longitude: 96.144,
           speedMetersPerSecond: 1.4,
           accuracyMeters: 5,
+          steps: 3,
+          pedestrianStatus: PedestrianState.walking,
+          hasStepData: true,
+          stepSource: StepDataSource.nativeMotion,
         ),
       );
       sensor.emit(
@@ -335,32 +347,21 @@ void main() {
           longitude: 96.144,
           speedMetersPerSecond: 1.4,
           accuracyMeters: 5,
+          steps: 3,
+          pedestrianStatus: PedestrianState.walking,
+          hasStepData: true,
+          stepSource: StepDataSource.nativeMotion,
         ),
       );
       await pumpEventQueue();
       final gpsOnlyState = container.read(runSessionProvider);
 
-      sensor.emit(
-        const RunSensorFrame(
-          latitude: 0,
-          longitude: 0,
-          speedMetersPerSecond: 0,
-          accuracyMeters: 0,
-          steps: 3,
-          hasStepData: true,
-          stepSource: StepDataSource.nativePedometer,
-          hasLocationData: false,
-          isLocationUpdate: false,
-        ),
-      );
-      await pumpEventQueue();
-
       expect(gpsOnlyState.distanceKilometers, greaterThan(0));
-      expect(gpsOnlyState.steps, 0);
+      expect(gpsOnlyState.steps, 3);
       expect(container.read(runSessionProvider).steps, 3);
       expect(
         container.read(runSessionProvider).stepSource,
-        StepDataSource.nativePedometer,
+        StepDataSource.nativeMotion,
       );
     });
 
@@ -390,11 +391,11 @@ void main() {
             longitude: 96.144,
             speedMetersPerSecond: 0.2,
             accuracyMeters: 5,
-          steps: 0,
-          hasStepData: true,
-          stepSource: StepDataSource.nativePedometer,
-          pedestrianStatus: PedestrianState.walking,
-          recordedAt: clock.value,
+            steps: 0,
+            hasStepData: true,
+            stepSource: StepDataSource.nativeMotion,
+            pedestrianStatus: PedestrianState.walking,
+            recordedAt: clock.value,
           ),
         );
         await pumpEventQueue();
@@ -405,11 +406,11 @@ void main() {
             longitude: 96.144,
             speedMetersPerSecond: 0.2,
             accuracyMeters: 5,
-          steps: 0,
-          hasStepData: true,
-          stepSource: StepDataSource.nativePedometer,
-          pedestrianStatus: PedestrianState.walking,
-          recordedAt: clock.value,
+            steps: 0,
+            hasStepData: true,
+            stepSource: StepDataSource.nativeMotion,
+            pedestrianStatus: PedestrianState.walking,
+            recordedAt: clock.value,
           ),
         );
         await pumpEventQueue();
@@ -489,7 +490,7 @@ void main() {
       expect(container.read(runSessionProvider).isIdle, isTrue);
     });
 
-    test('real pedometer steps survive pause and sensor restart', () async {
+    test('native motion steps survive pause and sensor restart', () async {
       final sensor = FakeRunSensorService();
       final clock = MutableClock(DateTime(2026, 8, 31, 6));
       final container = createContainer(sensor: sensor, clock: clock);

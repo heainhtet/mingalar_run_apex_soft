@@ -223,11 +223,9 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
           frame.steps > 0,
       cadence: frame.cadenceStepsPerMinute,
     );
-    // The estimates describe the same movement; summing them would double-count.
-    final distance = math.max(
-      gpsDistanceKilometers,
-      RunMetrics.distanceKilometersForSteps(steps),
-    );
+    // Distance is GPS-derived. Step totals never manufacture metres because a
+    // stride estimate would turn false hardware steps into a false route.
+    final distance = gpsDistanceKilometers;
     final elapsed = _activeElapsed(now);
     state = state.copyWith(
       stage: stage,
@@ -247,7 +245,7 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
         'moving=${_movingElapsed.inSeconds}s, '
         'distance=${distance.toStringAsFixed(3)}km, steps=$steps, '
         'calories=${state.calories}, stepsSource=${frame.stepSource.name}, '
-        'gpsAccepted=$hasAcceptedGpsMovement',
+        'gpsDistanceAccepted=$hasAcceptedGpsMovement',
       );
     }
     unawaited(_persistRecovery());

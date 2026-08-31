@@ -1,24 +1,34 @@
 import 'dart:async';
-import 'dart:io';
 
 import 'package:geolocator/geolocator.dart';
-import 'package:pedometer/pedometer.dart';
 import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/utils/app_platform.dart';
 import '../../../../core/utils/logger.dart';
 import '../../domain/entities/run_sensor_frame.dart';
+import '../../domain/services/run_motion_classifier.dart';
 import '../../domain/services/run_sensor_service.dart';
+import 'native_motion_tracker.dart';
 
-/// Converts native location and pedometer streams into normalized run frames.
+/// Combines GPS distance readings with one native motion stream.
+///
+/// The native adapter owns all step and activity inputs. GPS is intentionally
+/// kept out of motion classification so location drift can never report a walk,
+/// jog, or run.
 class GeolocatorRunSensorService implements RunSensorService {
-  static const _inactivityTimeout = Duration(seconds: 3);
-  static const _pendingStepWindow = Duration(seconds: 2);
+  GeolocatorRunSensorService({
+    NativeMotionTracker? motionTracker,
+    RunMotionClassifier? motionClassifier,
+  }) : _motionTracker = motionTracker ?? PlatformNativeMotionTracker(),
+       _motionClassifier = motionClassifier ?? RunMotionClassifier();
+
+  final NativeMotionTracker _motionTracker;
+  final RunMotionClassifier _motionClassifier;
 
   StreamSubscription<Position>? _gpsSubscription;
-  StreamSubscription<StepCount>? _stepSubscription;
-  StreamSubscription<PedestrianStatus>? _pedestrianSubscription;
+  StreamSubscription<NativeMotionEvent>? _motionSubscription;
   StreamController<RunSensorFrame>? _controller;
-  Timer? _inactivityTimer;
+  Timer? _motionRefreshTimer;
 
   bool _hasPosition = false;
   double _speed = 0;
@@ -26,17 +36,13 @@ class GeolocatorRunSensorService implements RunSensorService {
   double _longitude = 0;
   double _accuracy = 0;
 
-  int _lastRawSteps = 0;
+  int _stepCounterBaseline = 0;
   int _sessionSteps = 0;
-  bool _firstStepEvent = true;
+  bool _firstStepCounterEvent = true;
   bool _hasStepData = false;
   StepDataSource _stepSource = StepDataSource.unavailable;
-  int _pendingNativeSteps = 0;
-  DateTime? _pendingNativeStepsAt;
-  DateTime? _lastStepAt;
+  PedestrianState _pedestrian = PedestrianState.stopped;
   double _cadence = 0;
-  PedestrianState _pedestrian = PedestrianState.unknown;
-  DateTime? _lastMotionAt;
   bool _motionPermissionGranted = false;
 
   @override
@@ -66,7 +72,7 @@ class GeolocatorRunSensorService implements RunSensorService {
       _motionPermissionGranted = motion.isGranted;
       logger.i('Run permissions: location=$location, motion=${motion.name}');
 
-      if (Platform.isAndroid) {
+      if (AppPlatform.isAndroid) {
         final notification = await Permission.notification.request();
         logger.i('Run notification permission=${notification.name}');
       }
@@ -91,31 +97,19 @@ class GeolocatorRunSensorService implements RunSensorService {
   Stream<RunSensorFrame> start() {
     if (_controller != null ||
         _gpsSubscription != null ||
-        _stepSubscription != null ||
-        _pedestrianSubscription != null ||
-        _inactivityTimer != null) {
+        _motionSubscription != null ||
+        _motionRefreshTimer != null) {
       throw StateError('Run sensors must be stopped before restarting.');
     }
 
+    _resetSessionSensors();
     _controller = StreamController<RunSensorFrame>.broadcast();
-    _hasPosition = false;
-    _sessionSteps = 0;
-    _lastRawSteps = 0;
-    _firstStepEvent = true;
-    _hasStepData = false;
-    _stepSource = StepDataSource.unavailable;
-    _pendingNativeSteps = 0;
-    _pendingNativeStepsAt = null;
-    _cadence = 0;
-    _pedestrian = PedestrianState.unknown;
-    _lastStepAt = null;
-    _lastMotionAt = null;
-    _inactivityTimer = Timer.periodic(
+    _motionRefreshTimer = Timer.periodic(
       const Duration(seconds: 1),
-      _checkForInactivity,
+      (_) => _refreshMotion(DateTime.now()),
     );
 
-    final settings = Platform.isAndroid
+    final settings = AppPlatform.isAndroid
         ? AndroidSettings(
             accuracy: LocationAccuracy.bestForNavigation,
             distanceFilter: 3,
@@ -143,33 +137,33 @@ class GeolocatorRunSensorService implements RunSensorService {
         );
 
     if (_motionPermissionGranted) {
-      _listenPedometer();
+      _motionSubscription = _motionTracker.events.listen(
+        _onNativeMotionEvent,
+        onError: _onNativeMotionError,
+      );
     } else {
       logger.i(
-        'Native motion permission unavailable; step and activity data disabled',
+        'Native motion permission unavailable; steps and activity are disabled',
       );
     }
 
     return _controller!.stream;
   }
 
-  void _listenPedometer() {
-    try {
-      _stepSubscription = Pedometer.stepCountStream.listen(
-        _onSteps,
-        onError: _onStepSensorError,
-      );
-      _pedestrianSubscription = Pedometer.pedestrianStatusStream.listen(
-        _onPedestrian,
-        onError: _onPedestrianSensorError,
-      );
-    } catch (error, stackTrace) {
-      logger.e(
-        'Native pedometer is unavailable; step and activity data disabled',
-        error: error,
-        stackTrace: stackTrace,
-      );
-    }
+  void _resetSessionSensors() {
+    _hasPosition = false;
+    _speed = 0;
+    _latitude = 0;
+    _longitude = 0;
+    _accuracy = 0;
+    _stepCounterBaseline = 0;
+    _sessionSteps = 0;
+    _firstStepCounterEvent = true;
+    _hasStepData = false;
+    _stepSource = StepDataSource.unavailable;
+    _pedestrian = PedestrianState.stopped;
+    _cadence = 0;
+    _motionClassifier.reset();
   }
 
   void _onPosition(Position position) {
@@ -178,129 +172,98 @@ class GeolocatorRunSensorService implements RunSensorService {
     _latitude = position.latitude;
     _longitude = position.longitude;
     _accuracy = position.accuracy;
-    _emit(isLocationUpdate: true);
+    _refreshMotion(DateTime.now(), isLocationUpdate: true);
   }
 
-  void _onSteps(StepCount event) {
-    if (_firstStepEvent) {
-      _lastRawSteps = event.steps;
-      _firstStepEvent = false;
+  void _onNativeMotionEvent(NativeMotionEvent event) {
+    switch (event.type) {
+      case NativeMotionEventType.stepCounter:
+        _recordStepCounter(event);
+      case NativeMotionEventType.stepDetector:
+        _motionClassifier.recordStepDetector(event.recordedAt);
+      case NativeMotionEventType.cadence:
+        _motionClassifier.updateCadence(event.cadenceStepsPerMinute);
+      case NativeMotionEventType.activity:
+        _motionClassifier.updateActivity(
+          activity: event.activity,
+          confidence: event.confidence,
+          recordedAt: event.recordedAt,
+        );
+      case NativeMotionEventType.availability:
+        if (!event.isAvailable) {
+          logger.i('Native motion capability is unavailable on this device');
+        }
+    }
+    _refreshMotion(event.recordedAt);
+  }
+
+  void _recordStepCounter(NativeMotionEvent event) {
+    final reportedSteps = event.steps;
+    if (reportedSteps < 0) return;
+
+    if (_firstStepCounterEvent) {
+      _firstStepCounterEvent = false;
       _hasStepData = true;
-      _stepSource = StepDataSource.nativePedometer;
-      _emit();
+      _stepSource = StepDataSource.nativeMotion;
+      _stepCounterBaseline = reportedSteps;
+      _sessionSteps = event.isSessionTotal ? reportedSteps : 0;
+      if (event.isSessionTotal && reportedSteps > 0) {
+        // CMPedometer reports steps since this session started. Its first
+        // delivery can already contain several genuine steps, so retain that
+        // hardware count for the iOS confirmation window.
+        _motionClassifier.recordPedometerDelta(
+          stepDelta: reportedSteps,
+          recordedAt: event.recordedAt,
+          cadenceStepsPerMinute: event.cadenceStepsPerMinute,
+        );
+      }
       return;
     }
 
-    final now = DateTime.now();
-    final delta = event.steps - _lastRawSteps;
-    _lastRawSteps = event.steps;
-
-    // A step event alone is not proof of walking. Some devices increment their
-    // counter when shaken, so explicit native stopped status rejects the delta.
-    if (delta > 0 && delta < 1000) {
-      switch (_pedestrian) {
-        case PedestrianState.walking:
-          _recordNativeSteps(delta, now);
-        case PedestrianState.unknown:
-          _pendingNativeSteps += delta;
-          _pendingNativeStepsAt = now;
-        case PedestrianState.stopped:
-          logger.d('Ignored $delta native step(s) while status was stopped');
-      }
+    final nextSessionSteps = event.isSessionTotal
+        ? reportedSteps
+        : reportedSteps - _stepCounterBaseline;
+    if (nextSessionSteps < _sessionSteps) {
+      // Android counters reset only after a device restart. Re-baselining keeps
+      // a current session monotonic instead of turning a reset into fake steps.
+      _stepCounterBaseline = reportedSteps;
+      return;
     }
-    _emit();
+
+    final delta = nextSessionSteps - _sessionSteps;
+    _sessionSteps = nextSessionSteps;
+    _hasStepData = true;
+    _stepSource = StepDataSource.nativeMotion;
+    if (delta > 0) {
+      _motionClassifier.recordPedometerDelta(
+        stepDelta: delta,
+        recordedAt: event.recordedAt,
+        cadenceStepsPerMinute: event.cadenceStepsPerMinute,
+      );
+    }
   }
 
-  void _onPedestrian(PedestrianStatus event) {
-    _pedestrian = switch (event.status) {
-      'walking' => PedestrianState.walking,
-      'stopped' => PedestrianState.stopped,
-      _ => PedestrianState.unknown,
-    };
-    if (_pedestrian == PedestrianState.stopped) {
-      _clearPendingNativeSteps();
-      _cadence = 0;
-    } else if (_pedestrian == PedestrianState.walking) {
-      final now = DateTime.now();
-      final pendingAt = _pendingNativeStepsAt;
-      if (_pendingNativeSteps > 0 &&
-          pendingAt != null &&
-          now.difference(pendingAt) <= _pendingStepWindow) {
-        _recordNativeSteps(_pendingNativeSteps, now);
-      }
-      _clearPendingNativeSteps();
-      _lastMotionAt = now;
-      if (_isInactiveAt(now)) {
-        _pedestrian = PedestrianState.stopped;
-        _cadence = 0;
-      }
-    }
-    _emit();
+  void _refreshMotion(DateTime now, {bool isLocationUpdate = false}) {
+    final classification = _motionClassifier.classify(now);
+    _pedestrian = classification.pedestrianState;
+    _cadence = classification.cadenceStepsPerMinute;
+    _emit(isLocationUpdate: isLocationUpdate, recordedAt: now);
   }
 
-  void _onStepSensorError(Object error) {
-    logger.e('Native step stream failed; step data disabled', error: error);
-    unawaited(_cancelSafely(_stepSubscription, 'native step stream'));
-    _stepSubscription = null;
-    _stepSource = StepDataSource.unavailable;
+  void _onNativeMotionError(Object error, [StackTrace? stackTrace]) {
+    logger.e(
+      'Native motion stream failed; step and activity data are unavailable',
+      error: error,
+      stackTrace: stackTrace,
+    );
     _hasStepData = false;
-    _clearPendingNativeSteps();
-    _emit();
-  }
-
-  void _onPedestrianSensorError(Object error) {
-    _pedestrian = PedestrianState.unknown;
-    logger.e('Pedestrian status is unavailable', error: error);
-  }
-
-  void _recordNativeSteps(int delta, DateTime recordedAt) {
-    _sessionSteps += delta;
-    _lastMotionAt = recordedAt;
-    final previousStepAt = _lastStepAt;
-    if (previousStepAt != null) {
-      final minutes =
-          recordedAt.difference(previousStepAt).inMilliseconds / 60000.0;
-      if (minutes > 0) {
-        _cadence = (delta / minutes).clamp(0, 220).toDouble();
-      }
-    }
-    _lastStepAt = recordedAt;
-  }
-
-  void _clearPendingNativeSteps() {
-    _pendingNativeSteps = 0;
-    _pendingNativeStepsAt = null;
-  }
-
-  void _checkForInactivity(Timer timer) {
-    final now = DateTime.now();
-    final pendingAt = _pendingNativeStepsAt;
-    if (pendingAt != null && now.difference(pendingAt) > _pendingStepWindow) {
-      _clearPendingNativeSteps();
-    }
-    if (_isInactiveAt(now)) _markStopped();
-  }
-
-  bool _isInactiveAt(DateTime now) {
-    final lastMotion = _lastMotionAt;
-    return lastMotion != null &&
-        now.difference(lastMotion) >= _inactivityTimeout;
-  }
-
-  void _markStopped() {
-    if (_pedestrian == PedestrianState.stopped &&
-        _cadence == 0 &&
-        _speed == 0) {
-      return;
-    }
+    _stepSource = StepDataSource.unavailable;
     _pedestrian = PedestrianState.stopped;
     _cadence = 0;
-    _speed = 0;
-    _emit();
-    logger.d('No movement detected for 3s; activity changed to stopped');
+    _emit(recordedAt: DateTime.now());
   }
 
-  void _emit({bool isLocationUpdate = false}) {
+  void _emit({bool isLocationUpdate = false, DateTime? recordedAt}) {
     _controller?.add(
       RunSensorFrame(
         latitude: _latitude,
@@ -311,7 +274,7 @@ class GeolocatorRunSensorService implements RunSensorService {
         cadenceStepsPerMinute: _cadence,
         pedestrianStatus: _pedestrian,
         stepSource: _stepSource,
-        recordedAt: DateTime.now(),
+        recordedAt: recordedAt ?? DateTime.now(),
         hasStepData: _hasStepData,
         hasLocationData: _hasPosition,
         isLocationUpdate: isLocationUpdate,
@@ -330,17 +293,6 @@ class GeolocatorRunSensorService implements RunSensorService {
     );
   }
 
-  Future<void> _cancelSubscriptions() async {
-    await Future.wait([
-      _cancelSafely(_gpsSubscription, 'GPS stream'),
-      _cancelSafely(_stepSubscription, 'native step stream'),
-      _cancelSafely(_pedestrianSubscription, 'pedestrian status stream'),
-    ]);
-    _gpsSubscription = null;
-    _stepSubscription = null;
-    _pedestrianSubscription = null;
-  }
-
   Future<void> _cancelSafely(
     StreamSubscription<dynamic>? subscription,
     String source,
@@ -349,17 +301,20 @@ class GeolocatorRunSensorService implements RunSensorService {
     try {
       await subscription.cancel();
     } catch (error) {
-      // Some plugin streams fail before activation, then throw again on cancel.
-      // Cleanup is idempotent because every subscription is cleared afterward.
       logger.d('$source was already inactive during cleanup: $error');
     }
   }
 
   @override
   Future<void> stop() async {
-    _inactivityTimer?.cancel();
-    _inactivityTimer = null;
-    await _cancelSubscriptions();
+    _motionRefreshTimer?.cancel();
+    _motionRefreshTimer = null;
+    await Future.wait([
+      _cancelSafely(_gpsSubscription, 'GPS stream'),
+      _cancelSafely(_motionSubscription, 'native motion stream'),
+    ]);
+    _gpsSubscription = null;
+    _motionSubscription = null;
     await _controller?.close();
     _controller = null;
     logger.i('Run sensors stopped');

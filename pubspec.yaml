@@ -44,7 +44,6 @@ dependencies:
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
   geolocator: ^14.0.3
-  pedometer: ^4.2.0
   permission_handler: 12.0.1
   logger: ^2.7.0
   another_flushbar: 2.2.4
