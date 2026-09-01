@@ -172,11 +172,10 @@ packages:
   cm_pedometer:
     dependency: "direct main"
     description:
-      name: cm_pedometer
-      sha256: e90aa23e3ac4acdd6f9e6d8e1d86170d2bebe5b081cf6217f9bc096e0393be9f
-      url: "https://pub.dev"
-    source: hosted
-    version: "1.2.0"
+      path: "packages/cm_pedometer"
+      relative: true
+    source: path
+    version: "1.2.0+local"
   code_builder:
     dependency: transitive
     description:

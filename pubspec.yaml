@@ -22,7 +22,8 @@ dependencies:
   share_plus: ^13.3.0
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
-  cm_pedometer: ^1.2.0
+  cm_pedometer:
+    path: packages/cm_pedometer
   pedometer: ^4.2.0
   geolocator: ^14.0.3
   permission_handler: 12.0.1
