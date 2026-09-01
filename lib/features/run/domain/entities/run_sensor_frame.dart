@@ -1,10 +1,7 @@
-/// Plugin-independent pedestrian state used by the domain layer.
 enum PedestrianState { walking, stopped, unknown }
 
-/// Identifies the hardware path that supplied the current session step count.
 enum StepDataSource { cmPedometer, androidPedometer, unavailable }
 
-/// Normalized snapshot emitted whenever location or motion data changes.
 class RunSensorFrame {
   const RunSensorFrame({
     required this.latitude,
@@ -29,24 +26,16 @@ class RunSensorFrame {
   final double speedMetersPerSecond;
   final double accuracyMeters;
 
-  /// Cumulative steps for the current active sensor segment.
   final int steps;
 
-  /// Observed steps per minute, or zero when cadence is unavailable.
   final double cadenceStepsPerMinute;
 
-  /// Cumulative distance for the active sensor segment, supplied by iOS
-  /// Core Motion through `cm_pedometer`.
   final double? nativeDistanceKilometers;
 
-  /// Native iOS average active pace. Android deliberately leaves this null
-  /// because its pace is calculated from accepted GPS distance and moving time.
   final Duration? nativePacePerKilometer;
 
-  /// Distinguishes iOS Core Motion data from Android GPS-backed run metrics.
   final bool usesNativePedometerMetrics;
 
-  /// Confirmed pedestrian state derived from native step timing.
   final PedestrianState pedestrianStatus;
   final StepDataSource stepSource;
   final DateTime? recordedAt;
@@ -54,10 +43,8 @@ class RunSensorFrame {
   final bool hasLocationData;
   final bool isLocationUpdate;
 
-  /// Speed expressed in kilometres per hour.
   double get speedKmh => speedMetersPerSecond * 3.6;
 
-  /// True when the frame is accurate enough to be trusted for distance.
   bool get isUsable =>
       hasLocationData &&
       latitude.isFinite &&

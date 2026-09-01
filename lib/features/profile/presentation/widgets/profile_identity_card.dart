@@ -33,17 +33,17 @@ class ProfileIdentityCard extends StatelessWidget {
       width: double.infinity,
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withAlpha(26),
+            color: AppColors.shadow(context),
             offset: const Offset(0, 1),
             blurRadius: 2,
             spreadRadius: -1,
           ),
           BoxShadow(
-            color: AppColors.black.withAlpha(26),
+            color: AppColors.shadow(context),
             offset: const Offset(0, 1),
             blurRadius: 3,
           ),
@@ -66,7 +66,7 @@ class ProfileIdentityCard extends StatelessWidget {
             ],
           ),
           const Gap(16),
-          DashedDivider(color: AppColors.scoreSumLabelTextColor.withAlpha(77)),
+          DashedDivider(color: AppColors.divider(context)),
           const Gap(16),
           _RankDetails(rank: rank),
         ],
@@ -93,7 +93,7 @@ class _UserDetails extends StatelessWidget {
           style: AppTextStyles.semiBold().black
               .s(20)
               .copyWith(
-                color: AppColors.cardLabelText,
+                color: AppColors.primaryText(context),
                 height: 28 / 20,
                 letterSpacing: -0.44,
               ),
@@ -105,7 +105,7 @@ class _UserDetails extends StatelessWidget {
           style: AppTextStyles.regular().black
               .s(14)
               .copyWith(
-                color: AppColors.scoreSumLabelTextColor,
+                color: AppColors.secondaryText(context),
                 height: 20 / 14,
                 letterSpacing: -0.15,
               ),
@@ -130,13 +130,21 @@ class _QrAction extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            SvgPicture.asset(AssetsConstant.qrCode, width: 24, height: 24),
+            SvgPicture.asset(
+              AssetsConstant.qrCode,
+              width: 24,
+              height: 24,
+              colorFilter: ColorFilter.mode(
+                AppColors.primaryText(context),
+                BlendMode.srcIn,
+              ),
+            ),
             Text(
               'profileScreen.myQr'.tr(),
               style: AppTextStyles.regular().black
                   .s(10)
                   .copyWith(
-                    color: AppColors.defaultBlackText,
+                    color: AppColors.primaryText(context),
                     height: 24 / 10,
                     letterSpacing: -0.15,
                   ),
@@ -198,7 +206,7 @@ class _RankValue extends StatelessWidget {
           style: AppTextStyles.regular().black
               .s(10)
               .copyWith(
-                color: AppColors.scoreTextColor.withAlpha(77),
+                color: AppColors.secondaryText(context),
                 height: 16 / 10,
                 letterSpacing: -0.1,
               ),
@@ -208,7 +216,7 @@ class _RankValue extends StatelessWidget {
           style: AppTextStyles.bold().black
               .s(24)
               .copyWith(
-                color: AppColors.scoreTextColor,
+                color: AppColors.primaryText(context),
                 height: 32 / 24,
                 letterSpacing: -0.3,
               ),

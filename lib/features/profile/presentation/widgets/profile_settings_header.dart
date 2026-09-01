@@ -14,35 +14,39 @@ class ProfileSettingsHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.runGradientStart, AppColors.runGradientEnd],
+          colors: AppColors.runGradient(context),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.fromLTRB(8, 14, 20, 18),
-        child: Row(
-          children: [
-            IconButton(
-              onPressed: onBack,
-              icon: const Icon(
-                Icons.arrow_back_rounded,
-                color: AppColors.defaultPrimaryText,
+      child: SafeArea(
+        bottom: false,
+
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(8, 14, 20, 18),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: onBack,
+                icon: const Icon(
+                  Icons.arrow_back_rounded,
+                  color: AppColors.defaultPrimaryText,
+                ),
               ),
-            ),
-            const Gap(8),
-            Text(
-              'profileScreen.settings'.tr(),
-              style: AppTextStyles.semiBold().white
-                  .s(22)
-                  .copyWith(
-                    color: AppColors.defaultPrimaryText,
-                    letterSpacing: -0.5,
-                  ),
-            ),
-          ],
+              const Gap(8),
+              Text(
+                'profileScreen.settings'.tr(),
+                style: AppTextStyles.semiBold().white
+                    .s(22)
+                    .copyWith(
+                      color: AppColors.defaultPrimaryText,
+                      letterSpacing: -0.5,
+                    ),
+              ),
+            ],
+          ),
         ),
       ),
     );

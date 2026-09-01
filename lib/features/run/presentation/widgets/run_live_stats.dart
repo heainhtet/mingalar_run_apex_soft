@@ -89,7 +89,7 @@ class _LiveStat extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppTextStyles.regular()
               .s(10)
-              .copyWith(color: AppColors.cardDescriptionText, height: 1),
+              .copyWith(color: AppColors.secondaryText(context), height: 1),
         ),
         const Gap(4),
         Text(
@@ -99,7 +99,7 @@ class _LiveStat extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppTextStyles.semiBold()
               .s(14)
-              .copyWith(color: AppColors.cardLabelText, height: 1),
+              .copyWith(color: AppColors.primaryText(context), height: 1),
         ),
       ],
     );

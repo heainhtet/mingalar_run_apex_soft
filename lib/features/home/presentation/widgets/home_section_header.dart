@@ -30,7 +30,7 @@ class HomeSectionHeader extends StatelessWidget {
             style: AppTextStyles.medium().black
                 .s(16)
                 .copyWith(
-                  color: titleColor ?? AppColors.defaultBlackText,
+                  color: titleColor ?? AppColors.primaryText(context),
                   height: 1,
                   letterSpacing: 0,
                 ),
@@ -47,7 +47,7 @@ class HomeSectionHeader extends StatelessWidget {
               style: AppTextStyles.medium()
                   .s(10)
                   .copyWith(
-                    color: actionColor ?? AppColors.featureViewAllText,
+                    color: actionColor ?? AppColors.tertiaryText(context),
                     height: 1.2,
                     letterSpacing: 0,
                   ),

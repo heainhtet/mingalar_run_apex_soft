@@ -243,8 +243,6 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
     if (frame.nativePacePerKilometer != null) {
       _nativePacePerKilometer = frame.nativePacePerKilometer;
     }
-    // iOS Core Motion owns its distance and pace. Android accepts only the
-    // filtered GPS route; steps never manufacture indoor metres.
     final distance = frame.usesNativePedometerMetrics
         ? math.max(
             state.distanceKilometers,

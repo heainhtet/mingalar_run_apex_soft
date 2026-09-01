@@ -86,10 +86,6 @@ class _LegendDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 2,
-      // margin: const EdgeInsets.symmetric(vertical: 8),
-      color: AppColors.runGradientStart,
-    );
+    return Container(width: 2, color: AppColors.runGradientStart);
   }
 }

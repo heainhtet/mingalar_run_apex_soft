@@ -1,6 +1,7 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/theme/app_colors.dart';
@@ -18,22 +19,31 @@ class NotificationsPage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final notifications = ref.watch(homeNotificationsProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: Column(
-        children: [
-          _NotificationHeader(onBack: context.router.maybePop),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
-              physics: const BouncingScrollPhysics(),
-              itemCount: notifications.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) =>
-                  _NotificationTile(notification: notifications[index]),
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: AppColors.homeGradient(context).first,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemStatusBarContrastEnforced: false,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.pageBackground(context),
+        body: Column(
+          children: [
+            _NotificationHeader(onBack: context.router.maybePop),
+            Expanded(
+              child: ListView.separated(
+                padding: const EdgeInsets.fromLTRB(20, 22, 20, 32),
+                physics: const BouncingScrollPhysics(),
+                itemCount: notifications.length,
+                separatorBuilder: (context, index) =>
+                    const SizedBox(height: 12),
+                itemBuilder: (context, index) =>
+                    _NotificationTile(notification: notifications[index]),
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
@@ -47,11 +57,11 @@ class _NotificationHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DecoratedBox(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         gradient: LinearGradient(
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
-          colors: [AppColors.homeGradientStart, AppColors.homeGradientEnd],
+          colors: AppColors.homeGradient(context),
         ),
       ),
       child: SafeArea(
@@ -119,7 +129,7 @@ class _NotificationTile extends StatelessWidget {
       decoration: BoxDecoration(
         color: isActive
             ? AppColors.tabIndicatorColor.withAlpha(13)
-            : AppColors.white,
+            : AppColors.surface(context),
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isActive
@@ -128,7 +138,7 @@ class _NotificationTile extends StatelessWidget {
         ),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withAlpha(12),
+            color: AppColors.shadow(context, lightAlpha: 12),
             blurRadius: 12,
             offset: const Offset(0, 5),
           ),
@@ -159,7 +169,7 @@ class _NotificationTile extends StatelessWidget {
                         style: AppTextStyles.semiBold()
                             .s(14)
                             .copyWith(
-                              color: AppColors.cardLabelText,
+                              color: AppColors.primaryText(context),
                               height: 1.25,
                             ),
                       ),
@@ -181,7 +191,7 @@ class _NotificationTile extends StatelessWidget {
                   style: AppTextStyles.regular()
                       .s(12)
                       .copyWith(
-                        color: AppColors.cardDescriptionText,
+                        color: AppColors.secondaryText(context),
                         height: 1.45,
                       ),
                 ),
@@ -193,7 +203,7 @@ class _NotificationTile extends StatelessWidget {
                   style: AppTextStyles.regular()
                       .s(10)
                       .copyWith(
-                        color: AppColors.scoreSumLabelTextColor,
+                        color: AppColors.secondaryText(context),
                         height: 1,
                       ),
                 ),

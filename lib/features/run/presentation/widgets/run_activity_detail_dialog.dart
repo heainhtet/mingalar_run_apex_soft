@@ -68,7 +68,7 @@ class RunActivityDetailDialog extends ConsumerWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: DecoratedBox(
-            decoration: const BoxDecoration(color: AppColors.white),
+            decoration: BoxDecoration(color: AppColors.surface(context)),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -236,7 +236,7 @@ class _ActivityContent extends StatelessWidget {
             style: AppTextStyles.semiBold()
                 .s(16)
                 .copyWith(
-                  color: AppColors.cardLabelText,
+                  color: AppColors.primaryText(context),
                   height: 1.2,
                   letterSpacing: -0.15,
                 ),
@@ -304,7 +304,7 @@ class _DetailMetric extends StatelessWidget {
                     style: AppTextStyles.regular()
                         .s(9)
                         .copyWith(
-                          color: AppColors.scoreSumLabelTextColor,
+                          color: AppColors.secondaryText(context),
                           height: 1,
                         ),
                   ),
@@ -315,7 +315,10 @@ class _DetailMetric extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: AppTextStyles.semiBold()
                         .s(14)
-                        .copyWith(color: AppColors.scoreTextColor, height: 1),
+                        .copyWith(
+                          color: AppColors.primaryText(context),
+                          height: 1,
+                        ),
                   ),
                 ],
               ),
@@ -410,7 +413,7 @@ class _EmptyActivityContent extends StatelessWidget {
             textAlign: TextAlign.center,
             style: AppTextStyles.regular()
                 .s(14)
-                .copyWith(color: AppColors.cardDescriptionText, height: 1.4),
+                .copyWith(color: AppColors.secondaryText(context), height: 1.4),
           ),
         ],
       ),

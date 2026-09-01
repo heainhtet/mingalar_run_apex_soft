@@ -1,9 +1,5 @@
 import '../../../run/domain/entities/run_activity.dart';
 
-/// A runner's local progression is derived from completed activities.
-///
-/// Ten verified steps earn one ION point. When a completed legacy activity has
-/// no step total, each verified ten metres earns one point instead.
 enum ProfileTier {
   bronze('Bronze', 0),
   silver('Silver', 1000),

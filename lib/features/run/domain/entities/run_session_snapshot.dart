@@ -1,9 +1,5 @@
 import 'run_stage.dart';
 
-/// Persisted recovery point for an unfinished run.
-///
-/// Recovered sessions intentionally open paused. Time while the process was
-/// unavailable is therefore never added to active running time.
 class RunSessionSnapshot {
   const RunSessionSnapshot({
     required this.startedAt,

@@ -36,14 +36,11 @@ class ProfilePage extends ConsumerWidget {
       child: Scaffold(
         backgroundColor: AppColors.profileGradientStart,
         body: DecoratedBox(
-          decoration: const BoxDecoration(
+          decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
-              colors: [
-                AppColors.profileGradientStart,
-                AppColors.profileGradientEnd,
-              ],
+              colors: AppColors.profileGradient(context),
             ),
           ),
           child: SafeArea(

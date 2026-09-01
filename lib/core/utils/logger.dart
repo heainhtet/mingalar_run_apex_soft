@@ -1,7 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
-/// Shared development logger. Never include coordinates or personal data.
 final Logger logger = Logger(
   filter: DevelopmentFilter(),
   printer: PrettyPrinter(

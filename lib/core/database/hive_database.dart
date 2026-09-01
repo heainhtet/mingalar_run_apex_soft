@@ -24,8 +24,6 @@ abstract final class HiveKeys {
 }
 
 abstract final class HiveDatabase {
-  /// Registers the app-owned schema and opens every box before providers read
-  /// from them. Keeping startup here prevents persistence details leaking into UI.
   static Future<void> initialize() async {
     await Hive.initFlutter();
 

@@ -107,12 +107,12 @@ class _ProfileTextField extends StatelessWidget {
       validator: validator,
       style: AppTextStyles.regular().black
           .s(14)
-          .copyWith(color: AppColors.cardLabelText, letterSpacing: -0.15),
+          .copyWith(color: AppColors.primaryText(context), letterSpacing: -0.15),
       decoration: InputDecoration(
         labelText: label,
         prefixIcon: Icon(icon, color: AppColors.tabIndicatorColor),
         filled: true,
-        fillColor: AppColors.scoreSumLabelTextColor.withAlpha(13),
+        fillColor: AppColors.mutedSurface(context),
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(12),
           borderSide: BorderSide.none,

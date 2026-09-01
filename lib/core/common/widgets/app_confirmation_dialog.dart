@@ -76,7 +76,7 @@ class _AppConfirmationDialog extends StatelessWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: ColoredBox(
-            color: AppColors.white,
+            color: AppColors.surface(context),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
@@ -91,7 +91,7 @@ class _AppConfirmationDialog extends StatelessWidget {
                         style: AppTextStyles.regular()
                             .s(14)
                             .copyWith(
-                              color: AppColors.cardDescriptionText,
+                              color: AppColors.secondaryText(context),
                               height: 1.5,
                               letterSpacing: -0.1,
                             ),

@@ -12,10 +12,8 @@ enum AppLanguage {
 
   final Locale locale;
 
-  static AppLanguage fromCode(String? value) => switch (value) {
-    'my_MM' => AppLanguage.burmese,
-    _ => AppLanguage.english,
-  };
+  static AppLanguage fromCode(String? value) =>
+      value == 'my' ? AppLanguage.burmese : AppLanguage.english;
 }
 
 class AppSettings {
@@ -42,20 +40,26 @@ class AppSettingsController extends Notifier<AppSettings> {
 
   @override
   AppSettings build() {
-    final mode = _box.get(HiveKeys.themeMode);
     return AppSettings(
-      themeMode: mode == 'dark' ? ThemeMode.dark : ThemeMode.light,
+      themeMode: _box.get(HiveKeys.themeMode) == ThemeMode.dark.name
+          ? ThemeMode.dark
+          : ThemeMode.light,
       language: AppLanguage.fromCode(_box.get(HiveKeys.language)),
     );
   }
 
   Future<void> setThemeMode(ThemeMode mode) async {
-    await _box.put(HiveKeys.themeMode, mode.name);
+    if (state.themeMode == mode) return;
     state = state.copyWith(themeMode: mode);
+    await _box.put(HiveKeys.themeMode, mode.name);
   }
 
   Future<void> setLanguage(AppLanguage language) async {
-    await _box.put(HiveKeys.language, language.locale.toString());
+    if (state.language == language) return;
     state = state.copyWith(language: language);
+    await _box.put(
+      HiveKeys.language,
+      language == AppLanguage.burmese ? 'my' : 'en',
+    );
   }
 }

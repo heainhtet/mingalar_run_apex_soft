@@ -29,9 +29,14 @@ class StartRunCard extends ConsumerWidget {
       height: 196,
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18),
-        border: Border.all(color: const Color(0x80989898), width: 0.71),
+        border: Border.all(
+          color: AppColors.isDark(context)
+              ? AppColors.divider(context)
+              : const Color(0x80989898),
+          width: 0.71,
+        ),
         boxShadow: [
           BoxShadow(
             color: const Color(0x1A101828),
@@ -39,13 +44,13 @@ class StartRunCard extends ConsumerWidget {
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0x1A / 255),
+            color: AppColors.shadow(context),
             blurRadius: 10,
             spreadRadius: -6,
             offset: const Offset(0, 8),
           ),
           BoxShadow(
-            color: AppColors.black.withValues(alpha: 0x26 / 255),
+            color: AppColors.shadow(context),
             blurRadius: 25,
             spreadRadius: -5,
             offset: const Offset(0, 20),
@@ -67,7 +72,7 @@ class StartRunCard extends ConsumerWidget {
                   style: AppTextStyles.semiBold()
                       .s(18)
                       .copyWith(
-                        color: AppColors.cardLabelText,
+                        color: AppColors.primaryText(context),
                         height: 28 / 18,
                         letterSpacing: -0.44,
                       ),
@@ -168,7 +173,7 @@ class _ActiveRunSummary extends StatelessWidget {
               style: AppTextStyles.medium()
                   .s(11)
                   .copyWith(
-                    color: AppColors.cardLabelText,
+                    color: AppColors.primaryText(context),
                     height: 1,
                     letterSpacing: 0,
                   ),
@@ -224,7 +229,7 @@ class _FirstRunPrompt extends StatelessWidget {
             style: AppTextStyles.regular()
                 .s(13)
                 .copyWith(
-                  color: AppColors.cardDescriptionText,
+                  color: AppColors.secondaryText(context),
                   height: 18 / 13,
                   letterSpacing: -0.1,
                 ),
@@ -251,7 +256,7 @@ class _LastRunSummary extends StatelessWidget {
           style: AppTextStyles.regular()
               .s(10)
               .copyWith(
-                color: AppColors.scoreSumLabelTextColor,
+                color: AppColors.secondaryText(context),
                 height: 1,
                 letterSpacing: 0,
               ),
@@ -294,7 +299,7 @@ class _LastRunMetric extends StatelessWidget {
           style: AppTextStyles.medium()
               .s(11)
               .copyWith(
-                color: AppColors.cardLabelText,
+                color: AppColors.primaryText(context),
                 height: 1,
                 letterSpacing: 0,
               ),

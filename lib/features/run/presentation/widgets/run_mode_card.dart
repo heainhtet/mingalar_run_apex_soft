@@ -18,11 +18,11 @@ class RunModeCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(18),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withAlpha(24),
+            color: AppColors.shadow(context, lightAlpha: 24),
             blurRadius: 20,
             offset: const Offset(0, 8),
           ),
@@ -55,7 +55,7 @@ class RunModeCard extends StatelessWidget {
                   style: AppTextStyles.semiBold().black
                       .s(16)
                       .copyWith(
-                        color: AppColors.cardLabelText,
+                        color: AppColors.primaryText(context),
                         height: 1.25,
                         letterSpacing: -0.2,
                       ),
@@ -66,7 +66,7 @@ class RunModeCard extends StatelessWidget {
                   style: AppTextStyles.regular().black
                       .s(12)
                       .copyWith(
-                        color: AppColors.cardDescriptionText,
+                        color: AppColors.secondaryText(context),
                         height: 1.45,
                         letterSpacing: -0.1,
                       ),
@@ -88,7 +88,7 @@ class RunModeCard extends StatelessWidget {
                       style: AppTextStyles.medium().black
                           .s(10)
                           .copyWith(
-                            color: AppColors.cardDescriptionText,
+                            color: AppColors.secondaryText(context),
                             height: 1,
                             letterSpacing: 0,
                           ),

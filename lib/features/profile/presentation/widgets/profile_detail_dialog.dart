@@ -14,7 +14,6 @@ import '../providers/profile_providers.dart';
 import 'profile_avatar.dart';
 import 'profile_information_form.dart';
 
-/// Opens the local profile editor. QR display remains a separate action.
 Future<void> showProfileEditorDialog(
   BuildContext context,
   WidgetRef ref,
@@ -87,7 +86,7 @@ class _ProfileDetailDialogState extends ConsumerState<ProfileDetailDialog> {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: ColoredBox(
-            color: AppColors.white,
+            color: AppColors.surface(context),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [

@@ -14,10 +14,6 @@ import 'run_calendar_section.dart';
 import 'run_timer_card.dart';
 import 'runs_week_section.dart';
 
-/// Shared tracking sections used by each run-mode tab.
-///
-/// A mode can add its own introduction without duplicating the active run,
-/// calendar, or history integrations.
 class RunTabContent extends ConsumerWidget {
   const RunTabContent({super.key, required this.titleKey, this.introduction});
 

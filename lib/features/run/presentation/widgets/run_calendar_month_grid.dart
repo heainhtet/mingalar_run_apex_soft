@@ -59,8 +59,8 @@ class RunCalendarMonthGrid extends StatelessWidget {
                 if (index < leadingDays) return const SizedBox.shrink();
                 return RunCalendarDay(
                   day: days[index - leadingDays],
-                  textColor: AppColors.cardLabelText,
-                  indicatorBackgroundColor: AppColors.white,
+                  textColor: AppColors.primaryText(context),
+                  indicatorBackgroundColor: AppColors.surface(context),
                   todayBorderColor: AppColors.tabIndicatorColor,
                 );
               },

@@ -7,6 +7,7 @@ import 'package:gap/gap.dart';
 import '../../../../core/common/widgets/animated_list_entry.dart';
 import '../../../../core/common/widgets/discovery_card.dart';
 import '../../../../core/common/widgets/discovery_page_header.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../providers/challenges_provider.dart';
 
 @RoutePage()
@@ -18,7 +19,7 @@ class FeaturedChallengesPage extends ConsumerWidget {
     final challenges = ref.watch(featuredChallengesProvider);
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF7F8FC),
+      backgroundColor: AppColors.pageBackground(context),
       body: Column(
         children: [
           DiscoveryPageHeader(

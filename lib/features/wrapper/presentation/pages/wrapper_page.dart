@@ -64,12 +64,12 @@ class _WrapperPageState extends ConsumerState<WrapperPage>
         if (!didPop) _confirmExit();
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: const SystemUiOverlayStyle(
-          statusBarColor: Colors.white,
+        value: SystemUiOverlayStyle(
+          statusBarColor: AppColors.pageBackground(context),
           statusBarIconBrightness: Brightness.light,
           statusBarBrightness: Brightness.light,
           systemStatusBarContrastEnforced: false,
-          systemNavigationBarColor: AppColors.tabIndicatorColor,
+          systemNavigationBarColor: AppColors.navigationBackground(context),
           systemNavigationBarDividerColor: Colors.transparent,
           systemNavigationBarIconBrightness: Brightness.light,
           systemNavigationBarContrastEnforced: false,
@@ -77,9 +77,8 @@ class _WrapperPageState extends ConsumerState<WrapperPage>
         child: SafeArea(
           top: false,
           bottom: !AppPlatform.isIOS,
-          // bottom: false,
           child: Scaffold(
-            backgroundColor: AppColors.white,
+            backgroundColor: AppColors.pageBackground(context),
             extendBody: true,
 
             bottomNavigationBar: const BottomNaviWidget(),

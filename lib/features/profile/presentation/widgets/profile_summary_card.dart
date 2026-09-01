@@ -18,11 +18,11 @@ class ProfileSummaryCard extends StatelessWidget {
       height: 101,
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withAlpha(26),
+            color: AppColors.shadow(context),
             offset: const Offset(0, 2),
             blurRadius: 8,
           ),
@@ -43,7 +43,7 @@ class ProfileSummaryCard extends StatelessWidget {
                   style: AppTextStyles.regular().black
                       .s(10)
                       .copyWith(
-                        color: AppColors.scoreSumLabelTextColor,
+                        color: AppColors.secondaryText(context),
                         height: 12 / 10,
                         letterSpacing: 0,
                       ),
@@ -61,7 +61,7 @@ class ProfileSummaryCard extends StatelessWidget {
                   style: AppTextStyles.semiBold().black
                       .s(14)
                       .copyWith(
-                        color: AppColors.scoreTextColor,
+                        color: AppColors.primaryText(context),
                         height: 1,
                         letterSpacing: 0,
                       ),
@@ -72,7 +72,7 @@ class ProfileSummaryCard extends StatelessWidget {
             style: AppTextStyles.semiBold().black
                 .s(28)
                 .copyWith(
-                  color: AppColors.scoreTextColor,
+                  color: AppColors.primaryText(context),
                   height: 32 / 28,
                   letterSpacing: 0,
                 ),

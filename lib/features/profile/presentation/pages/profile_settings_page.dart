@@ -1,11 +1,13 @@
 import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/common/widgets/app_confirmation_dialog.dart';
 import '../../../../core/common/widgets/app_flushbar.dart';
+import '../../../../core/common/widgets/custom_theme_switch.dart';
 import '../../../../core/database/hive_database.dart';
 import '../../../../core/routers/app_router.gr.dart';
 import '../../../../core/settings/app_settings.dart';
@@ -26,46 +28,52 @@ class ProfileSettingsPage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final settings = ref.watch(appSettingsProvider);
-    return Scaffold(
-      backgroundColor: AppColors.white,
-      body: SafeArea(
-        child: Column(
+    return AnnotatedRegion<SystemUiOverlayStyle>(
+      value: SystemUiOverlayStyle(
+        statusBarColor: AppColors.homeGradient(context).first,
+        statusBarIconBrightness: Brightness.light,
+        statusBarBrightness: Brightness.dark,
+        systemStatusBarContrastEnforced: false,
+      ),
+      child: Scaffold(
+        backgroundColor: AppColors.pageBackground(context),
+        body: Column(
           children: [
             ProfileSettingsHeader(onBack: () => context.router.maybePop()),
             Expanded(
               child: ListView(
                 padding: const EdgeInsets.fromLTRB(20, 24, 20, 32),
                 children: [
-                  Text('profileScreen.appearance'.tr(), style: _sectionStyle),
+                  Text(
+                    'profileScreen.appearance'.tr(),
+                    style: _sectionStyle(context),
+                  ),
                   const Gap(12),
                   ProfileSettingsSurface(
-                    child: SwitchListTile.adaptive(
+                    child: ListTile(
                       contentPadding: EdgeInsets.zero,
-                      secondary: const Icon(
+                      leading: const Icon(
                         Icons.dark_mode_outlined,
                         color: AppColors.primaryButtonColor,
                       ),
                       title: Text(
                         'profileScreen.darkMode'.tr(),
-                        style: _titleStyle,
+                        style: _titleStyle(context),
                       ),
                       subtitle: Text(
                         settings.themeMode == ThemeMode.dark
                             ? 'profileScreen.darkModeEnabled'.tr()
                             : 'profileScreen.lightModeEnabled'.tr(),
-                        style: _subtitleStyle,
+                        style: _subtitleStyle(context),
                       ),
-                      value: settings.themeMode == ThemeMode.dark,
-                      activeTrackColor: AppColors.primaryButtonColor,
-                      onChanged: (isDark) => ref
-                          .read(appSettingsProvider.notifier)
-                          .setThemeMode(
-                            isDark ? ThemeMode.dark : ThemeMode.light,
-                          ),
+                      trailing: const CustomThemeSwitch(),
                     ),
                   ),
                   const Gap(28),
-                  Text('profileScreen.language'.tr(), style: _sectionStyle),
+                  Text(
+                    'profileScreen.language'.tr(),
+                    style: _sectionStyle(context),
+                  ),
                   const Gap(12),
                   ProfileSettingsSurface(
                     child: RadioGroup<AppLanguage>(
@@ -96,7 +104,10 @@ class ProfileSettingsPage extends ConsumerWidget {
                     ),
                   ),
                   const Gap(28),
-                  Text('profileScreen.account'.tr(), style: _sectionStyle),
+                  Text(
+                    'profileScreen.account'.tr(),
+                    style: _sectionStyle(context),
+                  ),
                   const Gap(12),
                   ProfileSettingsSurface(
                     child: ListTile(
@@ -107,13 +118,13 @@ class ProfileSettingsPage extends ConsumerWidget {
                       ),
                       title: Text(
                         'profileScreen.deleteAccount'.tr(),
-                        style: _titleStyle.copyWith(
-                          color: AppColors.caloriesIconColor,
-                        ),
+                        style: _titleStyle(
+                          context,
+                        ).copyWith(color: AppColors.caloriesIconColor),
                       ),
                       subtitle: Text(
                         'profileScreen.deleteAccountHint'.tr(),
-                        style: _subtitleStyle,
+                        style: _subtitleStyle(context),
                       ),
                       trailing: const Icon(
                         Icons.chevron_right_rounded,
@@ -137,7 +148,9 @@ class ProfileSettingsPage extends ConsumerWidget {
     AppLanguage language,
   ) async {
     await ref.read(appSettingsProvider.notifier).setLanguage(language);
-    if (context.mounted) await context.setLocale(language.locale);
+    if (context.mounted) {
+      await context.setLocale(language.locale);
+    }
   }
 
   Future<void> _deleteAccount(BuildContext context, WidgetRef ref) async {
@@ -184,17 +197,18 @@ class _LanguageOption extends StatelessWidget {
       contentPadding: EdgeInsets.zero,
       value: value,
       activeColor: AppColors.primaryButtonColor,
-      title: Text(title, style: _titleStyle),
+      title: Text(title, style: _titleStyle(context)),
     );
   }
 }
 
-final _sectionStyle = AppTextStyles.semiBold().black
+TextStyle _sectionStyle(BuildContext context) => AppTextStyles.semiBold().black
     .s(16)
-    .copyWith(color: AppColors.cardLabelText, letterSpacing: -0.5);
-final _titleStyle = AppTextStyles.medium().black
+    .copyWith(letterSpacing: -0.5)
+    .copyWith(color: AppColors.primaryText(context), letterSpacing: -0.5);
+TextStyle _titleStyle(BuildContext context) => AppTextStyles.medium().black
     .s(14)
-    .copyWith(color: AppColors.cardLabelText, letterSpacing: -0.5);
-final _subtitleStyle = AppTextStyles.regular().black
+    .copyWith(color: AppColors.primaryText(context), letterSpacing: -0.5);
+TextStyle _subtitleStyle(BuildContext context) => AppTextStyles.regular().black
     .s(12)
-    .copyWith(color: AppColors.scoreSumLabelTextColor, letterSpacing: -0.5);
+    .copyWith(color: AppColors.secondaryText(context), letterSpacing: -0.5);

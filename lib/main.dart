@@ -6,8 +6,8 @@ import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hive_ce/hive.dart';
 
-import 'core/routers/app_router.dart';
 import 'core/database/hive_database.dart';
+import 'core/routers/app_router.dart';
 import 'core/settings/app_settings.dart';
 import 'core/theme/app_colors.dart';
 import 'core/utils/app_platform.dart';
@@ -68,17 +68,24 @@ class MyApp extends ConsumerWidget {
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
-      locale: settings.language.locale,
+      locale: context.locale,
       builder: (context, child) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
         return AnnotatedRegion<SystemUiOverlayStyle>(
-          value: const SystemUiOverlayStyle(
-            systemNavigationBarColor: AppColors.tabIndicatorColor,
-            systemNavigationBarDividerColor: AppColors.tabIndicatorColor,
+          value: SystemUiOverlayStyle(
+            systemNavigationBarColor: isDark
+                ? const Color(0xFF0A1D50)
+                : AppColors.tabIndicatorColor,
+            systemNavigationBarDividerColor: isDark
+                ? const Color(0xFF0A1D50)
+                : AppColors.tabIndicatorColor,
             systemNavigationBarIconBrightness: Brightness.light,
             systemNavigationBarContrastEnforced: false,
           ),
           child: ColoredBox(
-            color: AppColors.tabIndicatorColor,
+            color: isDark
+                ? const Color(0xFF0A1D50)
+                : AppColors.tabIndicatorColor,
             child: child ?? const SizedBox.shrink(),
           ),
         );
@@ -86,6 +93,11 @@ class MyApp extends ConsumerWidget {
       theme: ThemeData(
         brightness: Brightness.light,
         fontFamily: 'Poppins',
+        scaffoldBackgroundColor: AppColors.white,
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primaryButtonColor,
+          brightness: Brightness.light,
+        ),
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.black,
           systemOverlayStyle: SystemUiOverlayStyle(
@@ -104,6 +116,8 @@ class MyApp extends ConsumerWidget {
           seedColor: AppColors.primaryButtonColor,
           brightness: Brightness.dark,
         ),
+        scaffoldBackgroundColor: const Color(0xFF081126),
+        dialogTheme: const DialogThemeData(backgroundColor: Color(0xFF121C33)),
       ),
       themeMode: settings.themeMode,
       routerDelegate: router.delegate(),

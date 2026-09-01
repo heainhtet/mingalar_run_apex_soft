@@ -11,11 +11,11 @@ class ProfileSettingsSurface extends StatelessWidget {
   Widget build(BuildContext context) {
     return DecoratedBox(
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(16),
         boxShadow: [
           BoxShadow(
-            color: AppColors.black.withAlpha(18),
+            color: AppColors.shadow(context, lightAlpha: 18),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),

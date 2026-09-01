@@ -39,8 +39,6 @@ class UserProfileHiveModel {
 }
 
 class UserProfileHiveAdapter extends TypeAdapter<UserProfileHiveModel> {
-  /// Type IDs and field numbers are persisted on disk. Existing IDs must never
-  /// be reused, and new fields must be appended without renumbering old fields.
   static const int typeIdValue = 1;
 
   @override

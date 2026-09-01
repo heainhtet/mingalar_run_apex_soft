@@ -1,7 +1,3 @@
-/// Aggregated run statistics for a single calendar day.
-///
-/// When `hasActivity` is `false`, all metric fields keep their zero defaults,
-/// which lets the UI render a "no activity" day without branching on nulls.
 class RunDayStat {
   const RunDayStat({
     required this.date,

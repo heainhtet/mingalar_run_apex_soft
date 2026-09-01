@@ -54,11 +54,11 @@ class _ScannedProfileDialog extends StatelessWidget {
         constraints: const BoxConstraints(maxWidth: 380),
         child: DecoratedBox(
           decoration: BoxDecoration(
-            color: AppColors.white,
+            color: AppColors.surface(context),
             borderRadius: BorderRadius.circular(24),
             boxShadow: [
               BoxShadow(
-                color: AppColors.black.withAlpha(35),
+                color: AppColors.shadow(context, lightAlpha: 35),
                 blurRadius: 30,
                 offset: const Offset(0, 16),
               ),
@@ -77,7 +77,7 @@ class _ScannedProfileDialog extends StatelessWidget {
                         style: AppTextStyles.semiBold()
                             .s(20)
                             .copyWith(
-                              color: AppColors.cardLabelText,
+                              color: AppColors.primaryText(context),
                               height: 1.2,
                               letterSpacing: -0.31,
                             ),
@@ -86,7 +86,7 @@ class _ScannedProfileDialog extends StatelessWidget {
                     IconButton(
                       onPressed: () => Navigator.of(context).pop(),
                       icon: const Icon(Icons.close_rounded),
-                      color: AppColors.cardLabelText,
+                      color: AppColors.primaryText(context),
                     ),
                   ],
                 ),
@@ -111,7 +111,7 @@ class _ScannedProfileDialog extends StatelessWidget {
                   style: AppTextStyles.semiBold()
                       .s(22)
                       .copyWith(
-                        color: AppColors.cardLabelText,
+                        color: AppColors.primaryText(context),
                         height: 1.25,
                         letterSpacing: -0.44,
                       ),
@@ -122,7 +122,7 @@ class _ScannedProfileDialog extends StatelessWidget {
                   style: AppTextStyles.regular()
                       .s(14)
                       .copyWith(
-                        color: AppColors.scoreSumLabelTextColor,
+                        color: AppColors.secondaryText(context),
                         height: 20 / 14,
                         letterSpacing: -0.15,
                       ),
@@ -210,14 +210,14 @@ class _ProfileValue extends StatelessWidget {
           label,
           style: AppTextStyles.regular()
               .s(10)
-              .copyWith(color: AppColors.scoreSumLabelTextColor, height: 1.2),
+              .copyWith(color: AppColors.secondaryText(context), height: 1.2),
         ),
         const Gap(3),
         Text(
           value,
           style: AppTextStyles.bold()
               .s(20)
-              .copyWith(color: AppColors.scoreTextColor, height: 1.2),
+              .copyWith(color: AppColors.primaryText(context), height: 1.2),
         ),
       ],
     );

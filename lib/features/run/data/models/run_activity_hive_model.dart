@@ -47,8 +47,6 @@ class RunActivityHiveModel {
 }
 
 class RunActivityHiveAdapter extends TypeAdapter<RunActivityHiveModel> {
-  /// Type IDs and field numbers form the database schema. Keep existing values
-  /// stable and append future fields so older run records remain readable.
   static const int typeIdValue = 2;
 
   @override

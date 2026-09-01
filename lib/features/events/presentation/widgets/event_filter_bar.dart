@@ -14,9 +14,9 @@ class EventCategoryTabBar extends StatelessWidget {
       height: 46,
       padding: const EdgeInsets.all(4),
       decoration: BoxDecoration(
-        color: AppColors.white,
+        color: AppColors.surface(context),
         borderRadius: BorderRadius.circular(24),
-        border: Border.all(color: const Color(0xFFD0D5DD)),
+        border: Border.all(color: AppColors.divider(context)),
       ),
       child: TabBar(
         dividerColor: Colors.transparent,
@@ -26,7 +26,7 @@ class EventCategoryTabBar extends StatelessWidget {
           borderRadius: BorderRadius.circular(20),
         ),
         labelColor: AppColors.defaultPrimaryText,
-        unselectedLabelColor: AppColors.cardDescriptionText,
+        unselectedLabelColor: AppColors.secondaryText(context),
         labelStyle: AppTextStyles.medium()
             .s(12)
             .copyWith(height: 1, letterSpacing: 0),

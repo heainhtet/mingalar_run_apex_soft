@@ -11,12 +11,6 @@ import '../../../../core/utils/logger.dart';
 import '../../domain/entities/run_sensor_frame.dart';
 import '../../domain/services/run_sensor_service.dart';
 
-/// Emits one normalized run-sensor stream while each platform keeps the
-/// measurement source it is best at.
-///
-/// iOS uses Core Motion through `cm_pedometer` for steps, status, distance,
-/// pace, and cadence. Android uses hardware pedometer events for steps/status
-/// and Geolocator for trusted outdoor route distance.
 class GeolocatorRunSensorService implements RunSensorService {
   StreamSubscription<Position>? _gpsSubscription;
   StreamSubscription<cm_pedometer.CMPedometerData>? _iosDataSubscription;
@@ -46,9 +40,6 @@ class GeolocatorRunSensorService implements RunSensorService {
   Future<RunPermissionResult> requestPermission() async {
     try {
       if (AppPlatform.isIOS) {
-        // CMPedometer owns the iOS authorization request. Subscribing to its
-        // stream prompts the system on first use and avoids a separate,
-        // unreliable activity-manager preflight.
         logger.i('iOS Core Motion permission will be requested by CMPedometer');
         return RunPermissionResult.granted;
       }
@@ -232,8 +223,6 @@ class GeolocatorRunSensorService implements RunSensorService {
 
     final sessionSteps = reportedSteps - _stepCounterBaseline;
     if (sessionSteps < _sessionSteps) {
-      // The Android hardware counter reset, usually after a reboot. Keep the
-      // session monotonic and establish a new baseline instead of adding steps.
       _stepCounterBaseline = reportedSteps;
       return;
     }

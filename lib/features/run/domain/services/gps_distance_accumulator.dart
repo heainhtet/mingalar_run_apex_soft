@@ -2,8 +2,6 @@ import 'dart:math' as math;
 
 import '../entities/run_sensor_frame.dart';
 
-/// Accumulates credible GPS movement while rejecting stationary drift and
-/// physically implausible jumps.
 class GpsDistanceAccumulator {
   GpsDistanceAccumulator({this.maximumSpeedMetersPerSecond = 12.5});
 
@@ -49,9 +47,6 @@ class GpsDistanceAccumulator {
   ) {
     if (!meters.isFinite || meters <= 0) return false;
 
-    // GPS validates a route only after the native motion pipeline has
-    // confirmed walking. GPS speed is not activity evidence: it can drift
-    // while the phone is sitting still.
     if (current.pedestrianStatus != PedestrianState.walking) {
       return false;
     }

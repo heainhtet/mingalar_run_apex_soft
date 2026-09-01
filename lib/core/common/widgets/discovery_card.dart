@@ -32,7 +32,7 @@ class DiscoveryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Material(
-      color: AppColors.white,
+      color: AppColors.surface(context),
       borderRadius: BorderRadius.circular(18),
       elevation: 0,
       child: InkWell(
@@ -41,10 +41,10 @@ class DiscoveryCard extends StatelessWidget {
         child: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(18),
-            border: Border.all(color: const Color(0xFFE4E7EC)),
-            boxShadow: const [
+            border: Border.all(color: AppColors.divider(context)),
+            boxShadow: [
               BoxShadow(
-                color: Color(0x10101828),
+                color: AppColors.shadow(context, lightAlpha: 16),
                 blurRadius: 16,
                 offset: Offset(0, 7),
               ),
@@ -105,7 +105,7 @@ class DiscoveryCard extends StatelessWidget {
                         style: AppTextStyles.semiBold()
                             .s(17)
                             .copyWith(
-                              color: AppColors.cardLabelText,
+                              color: AppColors.primaryText(context),
                               height: 1.25,
                               letterSpacing: -0.25,
                             ),
@@ -118,7 +118,7 @@ class DiscoveryCard extends StatelessWidget {
                         style: AppTextStyles.regular()
                             .s(12)
                             .copyWith(
-                              color: AppColors.cardDescriptionText,
+                              color: AppColors.secondaryText(context),
                               height: 1.4,
                               letterSpacing: 0,
                             ),
@@ -160,7 +160,7 @@ class _MetadataItem extends StatelessWidget {
           style: AppTextStyles.medium()
               .s(10)
               .copyWith(
-                color: AppColors.cardDescriptionText,
+                color: AppColors.secondaryText(context),
                 height: 1,
                 letterSpacing: 0,
               ),

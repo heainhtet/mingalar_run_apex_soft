@@ -191,8 +191,6 @@ final runAllHistoryDaysProvider = Provider<List<RunDayStat>>((ref) {
       .toList();
 });
 
-/// Builds a continuous rolling history so the UI also represents days where
-/// the runner had no activity instead of silently removing them.
 final runRecentDaysProvider = Provider.family<List<RunDayStat>, int>((
   ref,
   dayCount,

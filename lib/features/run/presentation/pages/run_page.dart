@@ -21,11 +21,11 @@ class RunPage extends ConsumerWidget {
     return Scaffold(
       backgroundColor: Colors.transparent,
       body: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
-            colors: [AppColors.runGradientStart, AppColors.runGradientEnd],
+            colors: AppColors.runGradient(context),
           ),
         ),
         child: Column(

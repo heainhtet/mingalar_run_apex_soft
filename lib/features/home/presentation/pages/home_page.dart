@@ -28,10 +28,10 @@ class HomePage extends ConsumerWidget {
     final headerTop = math.max(39.0, MediaQuery.paddingOf(context).top + 12);
 
     return Scaffold(
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.pageBackground(context),
       body: Stack(
         children: [
-          const Positioned(
+          Positioned(
             top: 0,
             left: 0,
             right: 0,
@@ -43,10 +43,7 @@ class HomePage extends ConsumerWidget {
                   gradient: LinearGradient(
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
-                    colors: [
-                      AppColors.homeGradientStart,
-                      AppColors.homeGradientEnd,
-                    ],
+                    colors: AppColors.homeGradient(context),
                   ),
                 ),
               ),

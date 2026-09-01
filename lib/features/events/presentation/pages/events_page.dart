@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:gap/gap.dart';
 
 import '../../../../core/common/widgets/discovery_page_header.dart';
+import '../../../../core/theme/app_colors.dart';
 import '../models/event_preview.dart';
 import '../widgets/event_filter_bar.dart';
 import '../widgets/event_list_tab.dart';
@@ -17,7 +18,7 @@ class EventsPage extends StatelessWidget {
     return DefaultTabController(
       length: EventCategory.values.length,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F8FC),
+        backgroundColor: AppColors.pageBackground(context),
         body: Column(
           children: [
             DiscoveryPageHeader(

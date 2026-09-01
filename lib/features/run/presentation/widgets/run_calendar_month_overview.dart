@@ -75,7 +75,10 @@ class _OverviewTile extends StatelessWidget {
                     value,
                     style: AppTextStyles.semiBold()
                         .s(17)
-                        .copyWith(color: AppColors.cardLabelText, height: 1),
+                        .copyWith(
+                          color: AppColors.primaryText(context),
+                          height: 1,
+                        ),
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -85,7 +88,7 @@ class _OverviewTile extends StatelessWidget {
                     style: AppTextStyles.regular()
                         .s(9)
                         .copyWith(
-                          color: AppColors.scoreSumLabelTextColor,
+                          color: AppColors.secondaryText(context),
                           height: 1,
                         ),
                   ),

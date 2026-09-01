@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class AppTextStyles {
   static const String fontFamily = 'Poppins';
 
-  // Base style to avoid repetition
   static TextStyle _base({
     double fontSize = 14,
     FontWeight fontWeight = FontWeight.w400,

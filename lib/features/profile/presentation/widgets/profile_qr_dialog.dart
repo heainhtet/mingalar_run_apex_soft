@@ -53,7 +53,7 @@ class _ProfileQrDialog extends ConsumerWidget {
     final rank = ref.watch(profileRankProvider);
     return Dialog(
       insetPadding: const EdgeInsets.symmetric(horizontal: 24),
-      backgroundColor: AppColors.white,
+      backgroundColor: AppColors.surface(context),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
       child: ConstrainedBox(
         constraints: const BoxConstraints(maxWidth: 380),
@@ -69,24 +69,24 @@ class _ProfileQrDialog extends ConsumerWidget {
                       'profileScreen.yourQr'.tr(),
                       style: AppTextStyles.semiBold().black
                           .s(20)
-                          .copyWith(color: AppColors.cardLabelText),
+                          .copyWith(color: AppColors.primaryText(context)),
                     ),
                   ),
                   IconButton(
                     onPressed: () => Navigator.of(context).pop(),
                     icon: const Icon(Icons.close_rounded),
-                    color: AppColors.cardLabelText,
+                    color: AppColors.primaryText(context),
                   ),
                 ],
               ),
               const Gap(20),
               DecoratedBox(
                 decoration: BoxDecoration(
-                  color: AppColors.white,
+                  color: AppColors.surface(context),
                   borderRadius: BorderRadius.circular(18),
                   boxShadow: [
                     BoxShadow(
-                      color: AppColors.black.withAlpha(26),
+                    color: AppColors.shadow(context),
                       blurRadius: 18,
                       offset: const Offset(0, 6),
                     ),
@@ -117,13 +117,13 @@ class _ProfileQrDialog extends ConsumerWidget {
                 user.name,
                 style: AppTextStyles.semiBold().black
                     .s(18)
-                    .copyWith(color: AppColors.cardLabelText),
+                    .copyWith(color: AppColors.primaryText(context)),
               ),
               Text(
                 user.phoneNumber,
                 style: AppTextStyles.regular().black
                     .s(14)
-                    .copyWith(color: AppColors.scoreSumLabelTextColor),
+                    .copyWith(color: AppColors.secondaryText(context)),
               ),
             ],
           ),

@@ -36,7 +36,7 @@ class RunCalendarDialog extends ConsumerWidget {
         child: ClipRRect(
           borderRadius: BorderRadius.circular(24),
           child: ColoredBox(
-            color: AppColors.white,
+            color: AppColors.surface(context),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
