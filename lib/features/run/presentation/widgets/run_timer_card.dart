@@ -234,6 +234,27 @@ class RunTimerCard extends ConsumerWidget {
             return true;
           },
         );
+      case RunPermissionResult.motionPermissionPermanentlyDenied:
+        await _showAccessDialog(
+          context,
+          titleKey: 'runScreen.motionPermissionTitle',
+          messageKey: 'runScreen.motionPermissionPermanentMessage',
+          actionKey: 'runScreen.openSettings',
+          icon: Icons.directions_run_rounded,
+          onAction: controller.openAppSettings,
+        );
+      case RunPermissionResult.motionPermissionDenied:
+        await _showAccessDialog(
+          context,
+          titleKey: 'runScreen.motionPermissionTitle',
+          messageKey: 'runScreen.motionPermissionMessage',
+          actionKey: 'runScreen.tryAgain',
+          icon: Icons.directions_run_rounded,
+          onAction: () async {
+            if (context.mounted) await _startRun(context, ref);
+            return true;
+          },
+        );
       case RunPermissionResult.failed:
         _showMessage(context, 'runScreen.permissionRequestFailed'.tr());
       case RunPermissionResult.granted:
@@ -247,6 +268,7 @@ class RunTimerCard extends ConsumerWidget {
     required String messageKey,
     required String actionKey,
     required Future<bool> Function() onAction,
+    IconData icon = Icons.location_on_rounded,
   }) async {
     final confirmed = await showAppConfirmationDialog(
       context,
@@ -254,7 +276,7 @@ class RunTimerCard extends ConsumerWidget {
       message: messageKey.tr(),
       cancelLabel: 'runScreen.cancel'.tr(),
       confirmLabel: actionKey.tr(),
-      icon: Icons.location_on_rounded,
+      icon: icon,
     );
     if (confirmed) await onAction();
   }

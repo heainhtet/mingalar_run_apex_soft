@@ -159,7 +159,7 @@ void main() {
           steps: 3,
           pedestrianStatus: PedestrianState.walking,
           hasStepData: true,
-          stepSource: StepDataSource.nativeMotion,
+          stepSource: StepDataSource.androidPedometer,
         ),
       );
       await pumpEventQueue();
@@ -173,7 +173,7 @@ void main() {
           steps: 3,
           pedestrianStatus: PedestrianState.walking,
           hasStepData: true,
-          stepSource: StepDataSource.nativeMotion,
+          stepSource: StepDataSource.androidPedometer,
         ),
       );
       await pumpEventQueue();
@@ -182,6 +182,49 @@ void main() {
       expect(state.distanceKilometers, greaterThan(0));
       expect(state.distanceKilometers, lessThan(1));
       expect(state.stage, RunStage.walking);
+    });
+
+    test('keeps iOS Core Motion distance and pace as native metrics', () async {
+      final sensor = FakeRunSensorService();
+      final container = ProviderContainer(
+        overrides: [
+          runActivityRepositoryProvider.overrideWithValue(
+            InMemoryRunActivityRepository(),
+          ),
+          runSensorServiceProvider.overrideWithValue(sensor),
+          runSessionRepositoryProvider.overrideWithValue(
+            InMemoryRunSessionRepository(),
+          ),
+        ],
+      );
+      addTearDown(container.dispose);
+
+      await container.read(runSessionProvider.notifier).start();
+      const nativePace = Duration(minutes: 5, seconds: 20);
+      sensor.emit(
+        const RunSensorFrame(
+          latitude: 0,
+          longitude: 0,
+          speedMetersPerSecond: 0,
+          accuracyMeters: 0,
+          steps: 42,
+          cadenceStepsPerMinute: 152,
+          nativeDistanceKilometers: 0.45,
+          nativePacePerKilometer: nativePace,
+          usesNativePedometerMetrics: true,
+          pedestrianStatus: PedestrianState.walking,
+          hasStepData: true,
+          hasLocationData: false,
+          isLocationUpdate: false,
+        ),
+      );
+      await pumpEventQueue();
+
+      final state = container.read(runSessionProvider);
+      expect(state.steps, 42);
+      expect(state.distanceKilometers, 0.45);
+      expect(state.pacePerKilometer, nativePace);
+      expect(state.stage, RunStage.jogging);
     });
 
     test(
@@ -338,7 +381,7 @@ void main() {
           steps: 3,
           pedestrianStatus: PedestrianState.walking,
           hasStepData: true,
-          stepSource: StepDataSource.nativeMotion,
+          stepSource: StepDataSource.androidPedometer,
         ),
       );
       sensor.emit(
@@ -350,7 +393,7 @@ void main() {
           steps: 3,
           pedestrianStatus: PedestrianState.walking,
           hasStepData: true,
-          stepSource: StepDataSource.nativeMotion,
+          stepSource: StepDataSource.androidPedometer,
         ),
       );
       await pumpEventQueue();
@@ -361,7 +404,7 @@ void main() {
       expect(container.read(runSessionProvider).steps, 3);
       expect(
         container.read(runSessionProvider).stepSource,
-        StepDataSource.nativeMotion,
+        StepDataSource.androidPedometer,
       );
     });
 
@@ -393,7 +436,7 @@ void main() {
             accuracyMeters: 5,
             steps: 0,
             hasStepData: true,
-            stepSource: StepDataSource.nativeMotion,
+            stepSource: StepDataSource.androidPedometer,
             pedestrianStatus: PedestrianState.walking,
             recordedAt: clock.value,
           ),
@@ -408,7 +451,7 @@ void main() {
             accuracyMeters: 5,
             steps: 0,
             hasStepData: true,
-            stepSource: StepDataSource.nativeMotion,
+            stepSource: StepDataSource.androidPedometer,
             pedestrianStatus: PedestrianState.walking,
             recordedAt: clock.value,
           ),
@@ -490,7 +533,7 @@ void main() {
       expect(container.read(runSessionProvider).isIdle, isTrue);
     });
 
-    test('native motion steps survive pause and sensor restart', () async {
+    test('session steps survive pause and sensor restart', () async {
       final sensor = FakeRunSensorService();
       final clock = MutableClock(DateTime(2026, 8, 31, 6));
       final container = createContainer(sensor: sensor, clock: clock);

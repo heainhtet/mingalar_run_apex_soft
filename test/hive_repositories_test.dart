@@ -28,6 +28,7 @@ void main() {
       await Hive.openBox<RunActivityHiveModel>(HiveBoxNames.runActivities);
       await Hive.openBox<RunSessionHiveModel>(HiveBoxNames.runSession);
       await Hive.openBox<bool>(HiveBoxNames.preferences);
+      await Hive.openBox<String>(HiveBoxNames.settings);
 
       final profileRepository = HiveProfileRepository.openedBox();
       final runRepository = HiveRunActivityRepository.openedBox();
@@ -38,6 +39,7 @@ void main() {
         phoneNumber: '09 123 456 789',
         tier: 'Gold',
         ionPoints: 42,
+        avatarPath: '/profile_images/avatar.jpg',
       );
       final activity = RunActivity(
         id: 'persisted-run',
@@ -69,6 +71,7 @@ void main() {
       await Hive.openBox<RunActivityHiveModel>(HiveBoxNames.runActivities);
       await Hive.openBox<RunSessionHiveModel>(HiveBoxNames.runSession);
       await Hive.openBox<bool>(HiveBoxNames.preferences);
+      await Hive.openBox<String>(HiveBoxNames.settings);
 
       final restoredProfile = await HiveProfileRepository.openedBox()
           .getProfile();
@@ -80,6 +83,7 @@ void main() {
 
       expect(restoredProfile?.name, profile.name);
       expect(restoredProfile?.ionPoints, profile.ionPoints);
+      expect(restoredProfile?.avatarPath, profile.avatarPath);
       expect(restoredRuns.single.id, activity.id);
       expect(restoredRuns.single.distanceKilometers, 4.75);
       expect(restoredRuns.single.steps, 5800);

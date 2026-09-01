@@ -14,6 +14,7 @@ class AppRouter extends RootStackRouter {
     AutoRoute(page: RunHistoryRoute.page),
     AutoRoute(page: EventsRoute.page),
     AutoRoute(page: ProfileRoute.page),
+    AutoRoute(page: ProfileSettingsRoute.page),
     AutoRoute(page: ProfileQrScannerRoute.page),
     AutoRoute(page: FeaturedChallengesRoute.page),
     AutoRoute(page: NotificationsRoute.page),

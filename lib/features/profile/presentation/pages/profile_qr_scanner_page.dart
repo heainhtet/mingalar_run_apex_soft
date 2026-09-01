@@ -2,7 +2,9 @@ import 'package:auto_route/auto_route.dart';
 import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_scanner/mobile_scanner.dart';
+import 'package:permission_handler/permission_handler.dart';
 
+import '../../../../core/common/widgets/app_confirmation_dialog.dart';
 import '../../../../core/common/widgets/app_flushbar.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
@@ -21,6 +23,7 @@ class ProfileQrScannerPage extends StatefulWidget {
 class _ProfileQrScannerPageState extends State<ProfileQrScannerPage> {
   late final MobileScannerController _controller;
   bool _handlingScan = false;
+  bool _handlingCameraError = false;
 
   @override
   void initState() {
@@ -47,7 +50,10 @@ class _ProfileQrScannerPageState extends State<ProfileQrScannerPage> {
             child: MobileScanner(
               controller: _controller,
               onDetect: _handleCapture,
-              errorBuilder: (context, error) => _ScannerError(error: error),
+              errorBuilder: (context, error) {
+                _handleCameraError(error);
+                return const SizedBox.expand();
+              },
             ),
           ),
           const Positioned.fill(child: _ScannerOverlay()),
@@ -91,6 +97,26 @@ class _ProfileQrScannerPageState extends State<ProfileQrScannerPage> {
     if (mounted) await showScannedProfileDialog(context, profile: profile);
     if (mounted) await _controller.start();
     _handlingScan = false;
+  }
+
+  void _handleCameraError(MobileScannerException error) {
+    if (_handlingCameraError) return;
+    _handlingCameraError = true;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      if (!mounted) return;
+      final openSettings = await showAppConfirmationDialog(
+        context,
+        title: 'profileScreen.cameraAccessTitle'.tr(),
+        message: 'profileScreen.cameraUnavailable'.tr(),
+        cancelLabel: 'runScreen.cancel'.tr(),
+        confirmLabel: 'runScreen.openSettings'.tr(),
+        icon: Icons.camera_alt_outlined,
+        confirmColor: AppColors.primaryButtonColor,
+      );
+      if (openSettings) await openAppSettings();
+      if (mounted) await context.router.maybePop();
+    });
   }
 }
 
@@ -195,31 +221,6 @@ class _ScannerInstructions extends StatelessWidget {
         style: AppTextStyles.regular()
             .s(13)
             .copyWith(color: AppColors.cardDescriptionText, height: 1.4),
-      ),
-    );
-  }
-}
-
-class _ScannerError extends StatelessWidget {
-  const _ScannerError({required this.error});
-
-  final MobileScannerException error;
-
-  @override
-  Widget build(BuildContext context) {
-    return ColoredBox(
-      color: AppColors.runGradientEnd,
-      child: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(32),
-          child: Text(
-            'profileScreen.cameraUnavailable'.tr(),
-            textAlign: TextAlign.center,
-            style: AppTextStyles.medium().white
-                .s(15)
-                .copyWith(color: AppColors.defaultPrimaryText, height: 1.4),
-          ),
-        ),
       ),
     );
   }

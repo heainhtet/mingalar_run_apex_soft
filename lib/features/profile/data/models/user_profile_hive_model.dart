@@ -8,6 +8,7 @@ class UserProfileHiveModel {
     required this.phoneNumber,
     required this.tier,
     required this.ionPoints,
+    this.avatarPath,
   });
 
   factory UserProfileHiveModel.fromEntity(UserProfile profile) {
@@ -16,6 +17,7 @@ class UserProfileHiveModel {
       phoneNumber: profile.phoneNumber,
       tier: profile.tier,
       ionPoints: profile.ionPoints,
+      avatarPath: profile.avatarPath,
     );
   }
 
@@ -23,6 +25,7 @@ class UserProfileHiveModel {
   final String phoneNumber;
   final String tier;
   final int ionPoints;
+  final String? avatarPath;
 
   UserProfile toEntity() {
     return UserProfile(
@@ -30,6 +33,7 @@ class UserProfileHiveModel {
       phoneNumber: phoneNumber,
       tier: tier,
       ionPoints: ionPoints,
+      avatarPath: avatarPath,
     );
   }
 }
@@ -55,13 +59,14 @@ class UserProfileHiveAdapter extends TypeAdapter<UserProfileHiveModel> {
       phoneNumber: fields[1] as String? ?? '',
       tier: fields[2] as String? ?? UserProfile.initialTier,
       ionPoints: fields[3] as int? ?? UserProfile.initialIonPoints,
+      avatarPath: fields[4] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, UserProfileHiveModel object) {
     writer
-      ..writeByte(4)
+      ..writeByte(5)
       ..writeByte(0)
       ..write(object.name)
       ..writeByte(1)
@@ -69,6 +74,8 @@ class UserProfileHiveAdapter extends TypeAdapter<UserProfileHiveModel> {
       ..writeByte(2)
       ..write(object.tier)
       ..writeByte(3)
-      ..write(object.ionPoints);
+      ..write(object.ionPoints)
+      ..writeByte(4)
+      ..write(object.avatarPath);
   }
 }

@@ -4,13 +4,13 @@
 	<dict>
 		<key>NSCameraUsageDescription</key>
 		<string>Mingalar Run uses the camera to scan another runner's profile QR code.</string>
-		<key>NSLocationWhenInUseUsageDescription</key>
-		<string>Mingalar Run uses your location to track running distance and pace accurately.</string>
-		<key>NSMotionUsageDescription</key>
-		<string>Mingalar Run uses motion activity to count steps and identify walking, jogging, and running.</string>
+	<key>NSMotionUsageDescription</key>
+	<string>Mingalar Run uses motion data to track your steps, distance, pace, and cadence.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Mingalar Run uses your photo library so you can choose a profile picture.</string>
 		<key>UIBackgroundModes</key>
 		<array>
-			<string>location</string>
+			<string>processing</string>
 		</array>
 		<key>CFBundleDevelopmentRegion</key>
 		<string>$(DEVELOPMENT_LANGUAGE)</string>

@@ -1,0 +1,19 @@
+{
+  "profileScreen": {
+    "settings": "ဆက်တင်များ",
+    "appearance": "အသွင်အပြင်",
+    "darkMode": "အမှောင်မုဒ်",
+    "darkModeEnabled": "အမှောင်အပြင်အဆင်ကို အသုံးပြုနေသည်",
+    "lightModeEnabled": "အလင်းအပြင်အဆင်ကို အသုံးပြုနေသည်",
+    "language": "ဘာသာစကား",
+    "english": "English",
+    "burmese": "မြန်မာ",
+    "account": "အကောင့်",
+    "deleteAccount": "စက်တွင်းအကောင့် ဖျက်မည်",
+    "deleteAccountHint": "ဤစက်ပေါ်ရှိ ပရိုဖိုင်နှင့် run မှတ်တမ်းအားလုံးကို ဖျက်ပါမည်။",
+    "deleteAccountTitle": "စက်တွင်းဒေတာအားလုံး ဖျက်မလား?",
+    "deleteAccountMessage": "ပရိုဖိုင်၊ ပြီးဆုံးထားသော run များ၊ လက်ရှိ run နှင့် onboarding အချက်အလက်များကို ဤစက်မှ အပြီးဖျက်ပါမည်။ ပြန်မရနိုင်ပါ။",
+    "deleteEverything": "အားလုံး ဖျက်မည်",
+    "deleteFailed": "စက်တွင်းဒေတာကို မဖျက်နိုင်ပါ။ ထပ်စမ်းကြည့်ပါ။"
+  }
+}

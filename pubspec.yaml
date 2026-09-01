@@ -40,13 +40,18 @@ dependencies:
   flutter_svg: ^2.3.0
   qr_flutter: ^4.1.0
   mobile_scanner: ^7.4.0
+  image_picker: ^1.2.3
+  path_provider: ^2.1.6
   share_plus: ^13.3.0
   hive_ce: ^2.19.3
   hive_ce_flutter: ^2.3.4
+  cm_pedometer: ^1.2.0
+  pedometer: ^4.2.0
   geolocator: ^14.0.3
   permission_handler: 12.0.1
   logger: ^2.7.0
   another_flushbar: 2.2.4
+  shared_preferences: ^2.5.5
 
 dev_dependencies:
   flutter_test:

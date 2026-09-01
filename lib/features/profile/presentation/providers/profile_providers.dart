@@ -5,11 +5,22 @@ import '../../../../core/utils/measurement_formatter.dart';
 import '../../../run/domain/entities/run_activity.dart';
 import '../../../run/presentation/providers/run_providers.dart';
 import '../../data/repositories/hive_profile_repository.dart';
+import '../../data/services/profile_image_storage.dart';
 import '../../domain/repositories/profile_repository.dart';
+import '../../domain/entities/profile_rank.dart';
 import '../models/profile_models.dart';
 
 final profileRepositoryProvider = Provider<ProfileRepository>((ref) {
   return HiveProfileRepository.openedBox();
+});
+
+final profileImageStorageProvider = Provider<ProfileImageStorage>((ref) {
+  return ProfileImageStorage();
+});
+
+final profileRankProvider = Provider<ProfileRank>((ref) {
+  final activities = ref.watch(runActivitiesProvider).value ?? const [];
+  return ProfileRank.fromActivities(activities);
 });
 
 final profileProvider = AsyncNotifierProvider<ProfileController, ProfileState>(
@@ -18,6 +29,8 @@ final profileProvider = AsyncNotifierProvider<ProfileController, ProfileState>(
 
 class ProfileController extends AsyncNotifier<ProfileState> {
   ProfileRepository get _repository => ref.read(profileRepositoryProvider);
+  ProfileImageStorage get _imageStorage =>
+      ref.read(profileImageStorageProvider);
 
   @override
   Future<ProfileState> build() async {
@@ -42,6 +55,7 @@ class ProfileController extends AsyncNotifier<ProfileState> {
             phoneNumber: phoneNumber.trim(),
             tier: current.user!.tier,
             ionPoints: current.user!.ionPoints,
+            avatarPath: current.user!.avatarPath,
           );
 
     try {
@@ -60,9 +74,41 @@ class ProfileController extends AsyncNotifier<ProfileState> {
   }
 
   Future<void> deleteProfile() async {
+    final avatarPath = state.value?.user?.avatarPath;
     await _repository.deleteProfile();
+    await _imageStorage.delete(avatarPath);
     state = const AsyncData(ProfileState());
     logger.i('Local runner profile deleted');
+  }
+
+  Future<void> updateAvatar(String temporaryPath) async {
+    final current = state.value ?? const ProfileState();
+    final user = current.user;
+    if (user == null) {
+      throw StateError(
+        'A profile is required before adding a profile picture.',
+      );
+    }
+
+    state = AsyncData(current.copyWith(isSaving: true));
+    String? persistedPath;
+    try {
+      persistedPath = await _imageStorage.persist(temporaryPath);
+      final updatedUser = user.copyWith(avatarPath: persistedPath);
+      await _repository.saveProfile(updatedUser);
+      await _imageStorage.delete(user.avatarPath);
+      state = AsyncData(ProfileState(user: updatedUser));
+      logger.i('Profile picture saved locally');
+    } catch (error, stackTrace) {
+      await _imageStorage.delete(persistedPath);
+      state = AsyncData(current);
+      logger.e(
+        'Unable to save profile picture',
+        error: error,
+        stackTrace: stackTrace,
+      );
+      rethrow;
+    }
   }
 }
 

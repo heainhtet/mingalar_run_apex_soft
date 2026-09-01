@@ -1,13 +1,8 @@
 /// Plugin-independent pedestrian state used by the domain layer.
 enum PedestrianState { walking, stopped, unknown }
 
-/// High-level movement hint supplied by the operating system.
-///
-/// It confirms hardware step timing but never creates a step or distance.
-enum NativeMotionActivity { still, walking, running, unknown }
-
 /// Identifies the hardware path that supplied the current session step count.
-enum StepDataSource { nativeMotion, unavailable }
+enum StepDataSource { cmPedometer, androidPedometer, unavailable }
 
 /// Normalized snapshot emitted whenever location or motion data changes.
 class RunSensorFrame {
@@ -18,6 +13,9 @@ class RunSensorFrame {
     required this.accuracyMeters,
     this.steps = 0,
     this.cadenceStepsPerMinute = 0,
+    this.nativeDistanceKilometers,
+    this.nativePacePerKilometer,
+    this.usesNativePedometerMetrics = false,
     this.pedestrianStatus = PedestrianState.unknown,
     this.stepSource = StepDataSource.unavailable,
     this.recordedAt,
@@ -36,6 +34,17 @@ class RunSensorFrame {
 
   /// Observed steps per minute, or zero when cadence is unavailable.
   final double cadenceStepsPerMinute;
+
+  /// Cumulative distance for the active sensor segment, supplied by iOS
+  /// Core Motion through `cm_pedometer`.
+  final double? nativeDistanceKilometers;
+
+  /// Native iOS average active pace. Android deliberately leaves this null
+  /// because its pace is calculated from accepted GPS distance and moving time.
+  final Duration? nativePacePerKilometer;
+
+  /// Distinguishes iOS Core Motion data from Android GPS-backed run metrics.
+  final bool usesNativePedometerMetrics;
 
   /// Confirmed pedestrian state derived from native step timing.
   final PedestrianState pedestrianStatus;

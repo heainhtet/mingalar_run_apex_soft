@@ -4,9 +4,11 @@ import 'package:easy_localization/easy_localization.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:hive_ce/hive.dart';
 
 import 'core/routers/app_router.dart';
 import 'core/database/hive_database.dart';
+import 'core/settings/app_settings.dart';
 import 'core/theme/app_colors.dart';
 import 'core/utils/app_platform.dart';
 import 'core/utils/logger.dart';
@@ -32,6 +34,9 @@ Future<void> main() async {
   };
   await EasyLocalization.ensureInitialized();
   await HiveDatabase.initialize();
+  final initialLanguage = AppLanguage.fromCode(
+    Hive.box<String>(HiveBoxNames.settings).get(HiveKeys.language),
+  );
   logger.i(
     'Mingalar Run application initialized on ${AppPlatform.operatingSystem}',
   );
@@ -39,10 +44,11 @@ Future<void> main() async {
   runApp(
     ProviderScope(
       child: EasyLocalization(
-        supportedLocales: const [Locale('en', 'US')],
+        supportedLocales: const [Locale('en', 'US'), Locale('my', 'MM')],
         path: 'assets/translations',
-        startLocale: const Locale('en', 'US'),
+        startLocale: initialLanguage.locale,
         fallbackLocale: const Locale('en', 'US'),
+        useFallbackTranslations: true,
         assetLoader: const RootBundleAssetLoader(),
         useOnlyLangCode: false,
         child: const MyApp(),
@@ -51,17 +57,18 @@ Future<void> main() async {
   );
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends ConsumerWidget {
   const MyApp({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final settings = ref.watch(appSettingsProvider);
     return MaterialApp.router(
       title: 'Mingalar Run',
       debugShowCheckedModeBanner: false,
       localizationsDelegates: context.localizationDelegates,
       supportedLocales: context.supportedLocales,
-      locale: context.locale,
+      locale: settings.language.locale,
       builder: (context, child) {
         return AnnotatedRegion<SystemUiOverlayStyle>(
           value: const SystemUiOverlayStyle(
@@ -77,6 +84,7 @@ class MyApp extends StatelessWidget {
         );
       },
       theme: ThemeData(
+        brightness: Brightness.light,
         fontFamily: 'Poppins',
         appBarTheme: const AppBarTheme(
           backgroundColor: AppColors.black,
@@ -89,6 +97,15 @@ class MyApp extends StatelessWidget {
           ),
         ),
       ),
+      darkTheme: ThemeData(
+        brightness: Brightness.dark,
+        fontFamily: 'Poppins',
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: AppColors.primaryButtonColor,
+          brightness: Brightness.dark,
+        ),
+      ),
+      themeMode: settings.themeMode,
       routerDelegate: router.delegate(),
       routeInformationParser: router.defaultRouteParser(),
     );

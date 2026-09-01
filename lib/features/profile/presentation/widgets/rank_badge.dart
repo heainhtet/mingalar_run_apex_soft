@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_colors.dart';
+import '../../domain/entities/profile_rank.dart';
 
 class RankBadge extends StatelessWidget {
-  const RankBadge({super.key});
+  const RankBadge({super.key, required this.tier});
+
+  final ProfileTier tier;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +16,7 @@ class RankBadge extends StatelessWidget {
       child: Stack(
         fit: StackFit.expand,
         children: [
-          const CustomPaint(painter: _RankBadgePainter()),
+          CustomPaint(painter: _RankBadgePainter(tier)),
           const Align(
             alignment: Alignment(0, -0.12),
             child: Icon(
@@ -29,7 +32,9 @@ class RankBadge extends StatelessWidget {
 }
 
 class _RankBadgePainter extends CustomPainter {
-  const _RankBadgePainter();
+  const _RankBadgePainter(this.tier);
+
+  final ProfileTier tier;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -83,18 +88,35 @@ class _RankBadgePainter extends CustomPainter {
       ..lineTo(13, 6.5)
       ..close();
 
+    final colors = switch (tier) {
+      ProfileTier.bronze => const [Color(0xFFF0B68B), Color(0xFF9A4B1E)],
+      ProfileTier.silver => const [Color(0xFFF3F6FA), Color(0xFF8B9AAD)],
+      ProfileTier.gold => const [
+        AppColors.rankGoldStart,
+        AppColors.rankGoldEnd,
+      ],
+      ProfileTier.platinum => const [Color(0xFFE9E8FF), Color(0xFF7167C9)],
+      ProfileTier.diamond => const [Color(0xFFC4F7FF), Color(0xFF1689AE)],
+    };
+    final border = switch (tier) {
+      ProfileTier.bronze => const Color(0xFF7A3514),
+      ProfileTier.silver => const Color(0xFF687789),
+      ProfileTier.gold => AppColors.rankGoldBorder,
+      ProfileTier.platinum => const Color(0xFF5147A1),
+      ProfileTier.diamond => const Color(0xFF086C91),
+    };
     final shieldPaint = Paint()
-      ..shader = const LinearGradient(
+      ..shader = LinearGradient(
         begin: Alignment.topLeft,
         end: Alignment.bottomRight,
-        colors: [AppColors.rankGoldStart, AppColors.rankGoldEnd],
+        colors: colors,
       ).createShader(Offset.zero & size);
     canvas.drawPath(shield, shieldPaint);
 
     canvas.drawPath(
       shield,
       Paint()
-        ..color = AppColors.rankGoldBorder
+        ..color = border
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1.5,
     );
@@ -117,5 +139,6 @@ class _RankBadgePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant _RankBadgePainter oldDelegate) =>
+      oldDelegate.tier != tier;
 }

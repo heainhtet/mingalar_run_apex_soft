@@ -42,6 +42,7 @@ class RunActivitiesController extends AsyncNotifier<List<RunActivity>> {
     required double distanceKilometers,
     required Duration duration,
     Duration? paceDuration,
+    Duration? pacePerKilometer,
     required int steps,
   }) async {
     if (!distanceKilometers.isFinite || distanceKilometers < 0) {
@@ -59,7 +60,9 @@ class RunActivitiesController extends AsyncNotifier<List<RunActivity>> {
     }
 
     final effectivePaceDuration = paceDuration ?? duration;
-    final pace = distanceKilometers == 0
+    final pace = pacePerKilometer != null && pacePerKilometer >= Duration.zero
+        ? pacePerKilometer
+        : distanceKilometers == 0
         ? Duration.zero
         : Duration(
             milliseconds:

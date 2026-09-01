@@ -10,6 +10,7 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../run/presentation/providers/run_providers.dart';
 import '../providers/profile_providers.dart';
 import '../widgets/profile_header.dart';
+import '../widgets/profile_detail_dialog.dart';
 import '../widgets/profile_identity_card.dart';
 import '../widgets/profile_qr_dialog.dart';
 import '../widgets/profile_run_history_section.dart';
@@ -23,6 +24,7 @@ class ProfilePage extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final profileState = ref.watch(profileProvider).value;
     final summary = ref.watch(profileSummaryProvider);
+    final rank = ref.watch(profileRankProvider);
     final lastSevenDays = ref.watch(runLastSevenDaysProvider);
 
     return AnnotatedRegion<SystemUiOverlayStyle>(
@@ -56,7 +58,7 @@ class ProfilePage extends ConsumerWidget {
                     onScanPressed: () =>
                         context.router.push(const ProfileQrScannerRoute()),
                     onSettingsPressed: () =>
-                        showProfileSettingsDialog(context, ref),
+                        context.router.push(const ProfileSettingsRoute()),
                   ),
                 ),
                 const Gap(22),
@@ -65,6 +67,9 @@ class ProfilePage extends ConsumerWidget {
                   child: ProfileIdentityCard(
                     user: profileState?.user,
                     onQrPressed: () => showProfileQrDialog(context, ref),
+                    onAvatarPressed: () =>
+                        showProfileEditorDialog(context, ref),
+                    rank: rank,
                   ),
                 ),
                 const Gap(44),

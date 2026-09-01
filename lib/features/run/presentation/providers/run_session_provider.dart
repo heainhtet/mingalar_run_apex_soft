@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
+import '../../../../core/utils/app_platform.dart';
 import '../../../../core/utils/logger.dart';
 import '../../data/repositories/hive_run_session_repository.dart';
 import '../../data/services/geolocator_run_sensor_service.dart';
@@ -48,6 +49,9 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
   double _caloriesExact = 0;
   final GpsDistanceAccumulator _gpsDistance = GpsDistanceAccumulator();
   int _stepsBeforeSegment = 0;
+  double _distanceBeforeSegment = 0;
+  Duration? _nativePacePerKilometer;
+  bool _usesNativePedometerMetrics = false;
   Future<void> _sensorCleanup = Future.value();
   late RunSensorService _sensorService;
   late RunSessionRepository _activeSessionRepository;
@@ -70,16 +74,19 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
     _caloriesExact = snapshot.caloriesExact;
     _gpsDistance.reset(initialDistanceKilometers: snapshot.distanceKilometers);
     _stepsBeforeSegment = snapshot.steps;
+    _distanceBeforeSegment = snapshot.distanceKilometers;
     return RunSessionState(
       status: RunSessionStatus.paused,
       stage: snapshot.stage,
       startedAt: snapshot.startedAt,
       elapsed: snapshot.elapsed,
       distanceKilometers: snapshot.distanceKilometers,
-      pacePerKilometer: RunMetrics.paceFor(
-        snapshot.distanceKilometers,
-        snapshot.movingElapsed,
-      ),
+      pacePerKilometer: AppPlatform.isIOS
+          ? null
+          : RunMetrics.paceFor(
+              snapshot.distanceKilometers,
+              snapshot.movingElapsed,
+            ),
       calories: snapshot.caloriesExact.round(),
       steps: snapshot.steps,
     );
@@ -96,6 +103,9 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
     _caloriesExact = 0;
     _gpsDistance.reset();
     _stepsBeforeSegment = 0;
+    _distanceBeforeSegment = 0;
+    _nativePacePerKilometer = null;
+    _usesNativePedometerMetrics = AppPlatform.isIOS;
     _segmentStartedAt = now;
     _lastMetricAt = now;
     state = RunSessionState(status: RunSessionStatus.running, startedAt: now);
@@ -124,6 +134,9 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
     await _sensorCleanup;
     final now = _now;
     _stepsBeforeSegment = state.steps;
+    _distanceBeforeSegment = state.distanceKilometers;
+    _nativePacePerKilometer = state.pacePerKilometer;
+    _usesNativePedometerMetrics = AppPlatform.isIOS;
     _segmentStartedAt = now;
     _lastMetricAt = now;
     state = state.copyWith(
@@ -164,6 +177,9 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
             distanceKilometers: current.distanceKilometers,
             duration: current.elapsed,
             paceDuration: _movingElapsed,
+            pacePerKilometer: _usesNativePedometerMetrics
+                ? _nativePacePerKilometer ?? Duration.zero
+                : null,
             steps: current.steps,
           );
       await _sessionRepository.clearActiveSession();
@@ -223,17 +239,29 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
           frame.steps > 0,
       cadence: frame.cadenceStepsPerMinute,
     );
-    // Distance is GPS-derived. Step totals never manufacture metres because a
-    // stride estimate would turn false hardware steps into a false route.
-    final distance = gpsDistanceKilometers;
+    _usesNativePedometerMetrics = frame.usesNativePedometerMetrics;
+    if (frame.nativePacePerKilometer != null) {
+      _nativePacePerKilometer = frame.nativePacePerKilometer;
+    }
+    // iOS Core Motion owns its distance and pace. Android accepts only the
+    // filtered GPS route; steps never manufacture indoor metres.
+    final distance = frame.usesNativePedometerMetrics
+        ? math.max(
+            state.distanceKilometers,
+            _distanceBeforeSegment + (frame.nativeDistanceKilometers ?? 0),
+          )
+        : gpsDistanceKilometers;
     final elapsed = _activeElapsed(now);
+    final pace = frame.usesNativePedometerMetrics
+        ? _nativePacePerKilometer
+        : RunMetrics.paceFor(distance, _movingElapsed);
     state = state.copyWith(
       stage: stage,
       stepSource: frame.stepSource,
       elapsed: elapsed,
       distanceKilometers: distance,
-      pacePerKilometer: RunMetrics.paceFor(distance, _movingElapsed),
-      clearPace: distance <= 0,
+      pacePerKilometer: pace,
+      clearPace: pace == null,
       calories: _caloriesExact.round(),
       steps: steps,
     );
@@ -276,11 +304,12 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
       final elapsed = _activeElapsed(now);
       state = state.copyWith(
         elapsed: elapsed,
-        pacePerKilometer: RunMetrics.paceFor(
-          state.distanceKilometers,
-          _movingElapsed,
-        ),
-        clearPace: state.distanceKilometers <= 0,
+        pacePerKilometer: _usesNativePedometerMetrics
+            ? _nativePacePerKilometer
+            : RunMetrics.paceFor(state.distanceKilometers, _movingElapsed),
+        clearPace: _usesNativePedometerMetrics
+            ? _nativePacePerKilometer == null
+            : state.distanceKilometers <= 0,
         calories: _caloriesExact.round(),
       );
       unawaited(_persistRecovery());
@@ -293,7 +322,9 @@ class RunSessionNotifier extends Notifier<RunSessionState> {
     final interval = now.difference(previous);
     if (state.stage.contributesToRunMetrics) {
       _movingElapsed += interval;
-      _caloriesExact += RunMetrics.caloriesExactFor(state.stage, interval);
+      if (!AppPlatform.isIOS) {
+        _caloriesExact += RunMetrics.caloriesExactFor(state.stage, interval);
+      }
     }
     _lastMetricAt = now;
   }

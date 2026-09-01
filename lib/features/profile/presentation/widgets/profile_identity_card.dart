@@ -8,7 +8,9 @@ import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/text_extensions.dart';
 import '../models/profile_models.dart';
+import '../../domain/entities/profile_rank.dart';
 import 'dashed_divider.dart';
+import 'profile_avatar.dart';
 import 'rank_badge.dart';
 
 class ProfileIdentityCard extends StatelessWidget {
@@ -16,10 +18,14 @@ class ProfileIdentityCard extends StatelessWidget {
     super.key,
     required this.user,
     required this.onQrPressed,
+    required this.onAvatarPressed,
+    required this.rank,
   });
 
   final UserProfile? user;
   final VoidCallback onQrPressed;
+  final VoidCallback onAvatarPressed;
+  final ProfileRank rank;
 
   @override
   Widget build(BuildContext context) {
@@ -48,7 +54,11 @@ class ProfileIdentityCard extends StatelessWidget {
         children: [
           Row(
             children: [
-              const _DefaultAvatar(),
+              ProfileAvatar(
+                avatarPath: user?.avatarPath,
+                size: 62,
+                onTap: onAvatarPressed,
+              ),
               const Gap(14),
               Expanded(child: _UserDetails(user: user)),
               const Gap(8),
@@ -58,30 +68,8 @@ class ProfileIdentityCard extends StatelessWidget {
           const Gap(16),
           DashedDivider(color: AppColors.scoreSumLabelTextColor.withAlpha(77)),
           const Gap(16),
-          _RankDetails(user: user),
+          _RankDetails(rank: rank),
         ],
-      ),
-    );
-  }
-}
-
-class _DefaultAvatar extends StatelessWidget {
-  const _DefaultAvatar();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: 62,
-      height: 62,
-      decoration: const BoxDecoration(
-        color: AppColors.tabIndicatorColor,
-        shape: BoxShape.circle,
-      ),
-      alignment: Alignment.center,
-      child: const Icon(
-        Icons.person_outline_rounded,
-        color: AppColors.defaultPrimaryText,
-        size: 39,
       ),
     );
   }
@@ -161,25 +149,25 @@ class _QrAction extends StatelessWidget {
 }
 
 class _RankDetails extends StatelessWidget {
-  const _RankDetails({required this.user});
+  const _RankDetails({required this.rank});
 
-  final UserProfile? user;
+  final ProfileRank rank;
 
   @override
   Widget build(BuildContext context) {
     return Row(
       children: [
-        const RankBadge(),
+        RankBadge(tier: rank.tier),
         const Gap(10),
         Expanded(
           child: _RankValue(
             label: 'profileScreen.currentTier'.tr(),
-            value: user?.tier ?? '--',
+            value: rank.tier.label,
           ),
         ),
         _RankValue(
           label: 'profileScreen.ionPoints'.tr(),
-          value: '${user?.ionPoints ?? 0}',
+          value: '${rank.ionPoints}',
           alignRight: true,
         ),
       ],

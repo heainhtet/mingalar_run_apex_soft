@@ -7,6 +7,7 @@ import 'package:mingalar_un/features/profile/presentation/models/profile_models.
 import 'package:mingalar_un/features/profile/presentation/providers/profile_providers.dart';
 import 'package:mingalar_un/features/profile/presentation/widgets/profile_summary_card.dart';
 import 'package:mingalar_un/features/profile/presentation/widgets/rank_badge.dart';
+import 'package:mingalar_un/features/profile/domain/entities/profile_rank.dart';
 import 'package:mingalar_un/features/run/domain/entities/run_activity.dart';
 import 'package:mingalar_un/features/run/presentation/providers/run_providers.dart';
 
@@ -14,6 +15,24 @@ import 'support/in_memory_repositories.dart';
 
 void main() {
   group('Profile', () {
+    test('derives rank progression from completed run steps', () {
+      final rank = ProfileRank.fromActivities([
+        RunActivity(
+          id: 'rank-run',
+          startedAt: DateTime(2026, 9, 1),
+          calories: 300,
+          distanceKilometers: 7,
+          duration: const Duration(minutes: 42),
+          pacePerKilometer: const Duration(minutes: 6),
+          steps: 52000,
+        ),
+      ]);
+
+      expect(rank.ionPoints, 5200);
+      expect(rank.tier, ProfileTier.gold);
+      expect(rank.pointsToNextTier, 9800);
+    });
+
     testWidgets('renders code-native rank and summary icons', (tester) async {
       final container = ProviderContainer(
         overrides: [
@@ -33,7 +52,7 @@ void main() {
           home: Scaffold(
             body: ListView(
               children: [
-                const RankBadge(),
+                const RankBadge(tier: ProfileTier.bronze),
                 ...metrics.map((metric) => ProfileSummaryCard(metric: metric)),
               ],
             ),

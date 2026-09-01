@@ -7,6 +7,7 @@ import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/text_extensions.dart';
 import '../../domain/entities/user_profile.dart';
 import 'rank_badge.dart';
+import '../../domain/entities/profile_rank.dart';
 
 Future<void> showScannedProfileDialog(
   BuildContext context, {
@@ -141,7 +142,7 @@ class _ScannedProfileDialog extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const RankBadge(),
+                      RankBadge(tier: ProfileTier.fromLabel(profile.tier)),
                       const Gap(12),
                       Expanded(
                         child: _ProfileValue(

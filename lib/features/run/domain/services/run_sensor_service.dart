@@ -5,6 +5,8 @@ enum RunPermissionResult {
   locationServiceDisabled,
   locationPermissionDenied,
   locationPermissionPermanentlyDenied,
+  motionPermissionDenied,
+  motionPermissionPermanentlyDenied,
   failed,
 }
 
@@ -13,7 +15,7 @@ enum RunPermissionResult {
 /// Platform plugin types stay behind this interface so session calculations can
 /// be tested with deterministic sensor frames.
 abstract interface class RunSensorService {
-  /// Checks location services and requests the permissions needed for a run.
+  /// Requests the platform permissions needed for a run.
   Future<RunPermissionResult> requestPermission();
 
   Future<bool> openLocationSettings();

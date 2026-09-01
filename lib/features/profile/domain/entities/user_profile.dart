@@ -6,14 +6,16 @@ class UserProfile {
     required this.phoneNumber,
     required this.tier,
     required this.ionPoints,
+    this.avatarPath,
   });
 
   final String name;
   final String phoneNumber;
   final String tier;
   final int ionPoints;
+  final String? avatarPath;
 
-  static const String initialTier = 'Gold';
+  static const String initialTier = 'Bronze';
   static const int initialIonPoints = 0;
 
   factory UserProfile.newRunner({
@@ -25,6 +27,23 @@ class UserProfile {
       phoneNumber: phoneNumber,
       tier: initialTier,
       ionPoints: initialIonPoints,
+    );
+  }
+
+  UserProfile copyWith({
+    String? name,
+    String? phoneNumber,
+    String? tier,
+    int? ionPoints,
+    String? avatarPath,
+    bool removeAvatar = false,
+  }) {
+    return UserProfile(
+      name: name ?? this.name,
+      phoneNumber: phoneNumber ?? this.phoneNumber,
+      tier: tier ?? this.tier,
+      ionPoints: ionPoints ?? this.ionPoints,
+      avatarPath: removeAvatar ? null : avatarPath ?? this.avatarPath,
     );
   }
 
@@ -62,12 +81,15 @@ class UserProfile {
     }
   }
 
-  String get qrPayload => jsonEncode({
-    'type': 'mingalar_run_profile',
-    'version': 1,
-    'name': name,
-    'phoneNumber': phoneNumber,
-    'tier': tier,
-    'ionPoints': ionPoints,
-  });
+  String get qrPayload => qrPayloadFor(tier: tier, ionPoints: ionPoints);
+
+  String qrPayloadFor({required String tier, required int ionPoints}) =>
+      jsonEncode({
+        'type': 'mingalar_run_profile',
+        'version': 1,
+        'name': name,
+        'phoneNumber': phoneNumber,
+        'tier': tier,
+        'ionPoints': ionPoints,
+      });
 }

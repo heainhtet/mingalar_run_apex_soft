@@ -20,6 +20,7 @@ class RunCalendarLegend extends StatelessWidget {
       ),
       child: IntrinsicHeight(
         child: Row(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _LegendSegment(
               status: RunCalendarStatus.completeRecord,
@@ -52,12 +53,12 @@ class _LegendSegment extends StatelessWidget {
   Widget build(BuildContext context) {
     return Expanded(
       child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 10),
         child: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             CalendarIndicator(status: status),
-            const Gap(8),
+            const Gap(4),
             Flexible(
               child: Text(
                 label,
@@ -85,9 +86,10 @@ class _LegendDivider extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ColoredBox(
-      color: Colors.transparent,
-      child: const SizedBox(width: 1),
+    return Container(
+      width: 2,
+      // margin: const EdgeInsets.symmetric(vertical: 8),
+      color: AppColors.runGradientStart,
     );
   }
 }
