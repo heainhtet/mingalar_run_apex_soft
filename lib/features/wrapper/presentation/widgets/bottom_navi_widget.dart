@@ -35,12 +35,12 @@ class BottomNaviWidget extends ConsumerWidget {
     final labels = ['home'.tr(), 'run'.tr(), 'events'.tr(), 'profile'.tr()];
     final labelStyle = AppTextStyles.medium().white
         .s(10)
-        .copyWith(letterSpacing: 0, height: 0);
+        .copyWith(letterSpacing: -0.5, height: 0);
 
     return CurvedNavigationBar(
       index: selectedIndex,
       maxWidth: MediaQuery.of(context).size.width,
-      height: AppPlatform.isIOS ? 80 : 65,
+      height: AppPlatform.isIOS ? 84 : 65,
       color: AppColors.navigationBackground(context),
       backgroundColor: AppColors.pageBackground(context),
       buttonBackgroundColor: AppColors.navigationBackground(context),

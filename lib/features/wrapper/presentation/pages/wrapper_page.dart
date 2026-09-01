@@ -64,15 +64,10 @@ class _WrapperPageState extends ConsumerState<WrapperPage>
         if (!didPop) _confirmExit();
       },
       child: AnnotatedRegion<SystemUiOverlayStyle>(
-        value: SystemUiOverlayStyle(
-          statusBarColor: AppColors.pageBackground(context),
+        value: const SystemUiOverlayStyle(
+          statusBarColor: Colors.transparent,
           statusBarIconBrightness: Brightness.light,
-          statusBarBrightness: Brightness.light,
-          systemStatusBarContrastEnforced: false,
-          systemNavigationBarColor: AppColors.navigationBackground(context),
-          systemNavigationBarDividerColor: Colors.transparent,
-          systemNavigationBarIconBrightness: Brightness.light,
-          systemNavigationBarContrastEnforced: false,
+          statusBarBrightness: Brightness.dark,
         ),
         child: SafeArea(
           top: false,

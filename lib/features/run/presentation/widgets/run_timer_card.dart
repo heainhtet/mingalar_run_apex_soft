@@ -4,17 +4,14 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:gap/gap.dart';
 
-import '../../../../core/common/widgets/app_flushbar.dart';
-import '../../../../core/common/widgets/app_confirmation_dialog.dart';
 import '../../../../core/common/widgets/primary_button_widget.dart';
 import '../../../../core/constants/assets_constant.dart';
 import '../../../../core/theme/app_colors.dart';
 import '../../../../core/theme/app_text_styles.dart';
 import '../../../../core/utils/text_extensions.dart';
-import '../../domain/services/run_sensor_service.dart';
 import '../providers/run_session_provider.dart';
-import 'run_end_confirmation_dialog.dart';
 import 'run_live_stats.dart';
+import 'run_session_actions.dart';
 
 class RunTimerCard extends ConsumerWidget {
   const RunTimerCard({super.key});
@@ -28,7 +25,7 @@ class RunTimerCard extends ConsumerWidget {
       next,
     ) {
       if (next != null && next != previous) {
-        _showMessage(context, 'runScreen.sensorPaused'.tr());
+        RunSessionActions.showMessage(context, 'runScreen.sensorPaused'.tr());
       }
     });
 
@@ -136,7 +133,7 @@ class RunTimerCard extends ConsumerWidget {
           if (!session.hasStarted)
             PrimaryButtonWidget(
               text: 'runScreen.startRun'.tr(),
-              onPressed: () => _startRun(context, ref),
+              onPressed: () => RunSessionActions.start(context, ref),
               height: 52,
               borderRadius: 30,
               backgroundColor: AppColors.primaryButtonColor,
@@ -178,7 +175,7 @@ class RunTimerCard extends ConsumerWidget {
                 Expanded(
                   child: PrimaryButtonWidget(
                     text: 'runScreen.end'.tr(),
-                    onPressed: () => _confirmEnd(context, ref),
+                    onPressed: () => RunSessionActions.confirmEnd(context, ref),
                     isLoading: session.isSaving,
                     height: 52,
                     borderRadius: 30,
@@ -201,86 +198,6 @@ class RunTimerCard extends ConsumerWidget {
     );
   }
 
-  Future<void> _startRun(BuildContext context, WidgetRef ref) async {
-    final controller = ref.read(runSessionProvider.notifier);
-    final result = await controller.start();
-    if (!context.mounted || result == RunPermissionResult.granted) return;
-
-    switch (result) {
-      case RunPermissionResult.locationServiceDisabled:
-        await _showAccessDialog(
-          context,
-          titleKey: 'runScreen.locationServiceTitle',
-          messageKey: 'runScreen.locationServiceMessage',
-          actionKey: 'runScreen.openSettings',
-          onAction: controller.openLocationSettings,
-        );
-      case RunPermissionResult.locationPermissionPermanentlyDenied:
-        await _showAccessDialog(
-          context,
-          titleKey: 'runScreen.locationPermissionTitle',
-          messageKey: 'runScreen.locationPermissionPermanentMessage',
-          actionKey: 'runScreen.openSettings',
-          onAction: controller.openAppSettings,
-        );
-      case RunPermissionResult.locationPermissionDenied:
-        await _showAccessDialog(
-          context,
-          titleKey: 'runScreen.locationPermissionTitle',
-          messageKey: 'runScreen.locationPermissionMessage',
-          actionKey: 'runScreen.tryAgain',
-          onAction: () async {
-            if (context.mounted) await _startRun(context, ref);
-            return true;
-          },
-        );
-      case RunPermissionResult.motionPermissionPermanentlyDenied:
-        await _showAccessDialog(
-          context,
-          titleKey: 'runScreen.motionPermissionTitle',
-          messageKey: 'runScreen.motionPermissionPermanentMessage',
-          actionKey: 'runScreen.openSettings',
-          icon: Icons.directions_run_rounded,
-          onAction: controller.openAppSettings,
-        );
-      case RunPermissionResult.motionPermissionDenied:
-        await _showAccessDialog(
-          context,
-          titleKey: 'runScreen.motionPermissionTitle',
-          messageKey: 'runScreen.motionPermissionMessage',
-          actionKey: 'runScreen.tryAgain',
-          icon: Icons.directions_run_rounded,
-          onAction: () async {
-            if (context.mounted) await _startRun(context, ref);
-            return true;
-          },
-        );
-      case RunPermissionResult.failed:
-        _showMessage(context, 'runScreen.permissionRequestFailed'.tr());
-      case RunPermissionResult.granted:
-        break;
-    }
-  }
-
-  Future<void> _showAccessDialog(
-    BuildContext context, {
-    required String titleKey,
-    required String messageKey,
-    required String actionKey,
-    required Future<bool> Function() onAction,
-    IconData icon = Icons.location_on_rounded,
-  }) async {
-    final confirmed = await showAppConfirmationDialog(
-      context,
-      title: titleKey.tr(),
-      message: messageKey.tr(),
-      cancelLabel: 'runScreen.cancel'.tr(),
-      confirmLabel: actionKey.tr(),
-      icon: icon,
-    );
-    if (confirmed) await onAction();
-  }
-
   String _formatElapsed(Duration elapsed) {
     final hours = elapsed.inHours;
     final minutes = elapsed.inMinutes.remainder(60);
@@ -293,26 +210,5 @@ class RunTimerCard extends ConsumerWidget {
     }
     return '${minutes.toString().padLeft(2, '0')}:'
         '${seconds.toString().padLeft(2, '0')}';
-  }
-
-  Future<void> _confirmEnd(BuildContext context, WidgetRef ref) async {
-    final confirmed = await showRunEndConfirmationDialog(context);
-
-    if (confirmed) {
-      try {
-        final result = await ref.read(runSessionProvider.notifier).end();
-        if (context.mounted && result == RunEndResult.discarded) {
-          _showMessage(context, 'runScreen.runDiscarded'.tr());
-        }
-      } catch (_) {
-        if (context.mounted) {
-          _showMessage(context, 'runScreen.saveFailed'.tr());
-        }
-      }
-    }
-  }
-
-  void _showMessage(BuildContext context, String message) {
-    AppFlushbar.info(context, message);
   }
 }

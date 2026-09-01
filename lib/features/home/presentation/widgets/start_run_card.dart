@@ -13,6 +13,8 @@ import '../../../../core/utils/text_extensions.dart';
 import '../../../run/domain/entities/run_activity.dart';
 import '../../../run/presentation/providers/run_providers.dart';
 import '../../../run/presentation/providers/run_session_provider.dart';
+import '../../../run/presentation/widgets/run_live_stats.dart';
+import '../../../run/presentation/widgets/run_session_actions.dart';
 
 class StartRunCard extends ConsumerWidget {
   const StartRunCard({super.key, required this.onStartRunning});
@@ -24,9 +26,10 @@ class StartRunCard extends ConsumerWidget {
     final session = ref.watch(runSessionProvider);
     final activities = ref.watch(runActivitiesProvider);
     final latestRun = activities.value?.firstOrNull;
+    final controller = ref.read(runSessionProvider.notifier);
 
     return Container(
-      height: 196,
+      height: session.hasStarted ? 220 : 196,
       padding: const EdgeInsets.fromLTRB(24, 20, 24, 20),
       decoration: BoxDecoration(
         color: AppColors.surface(context),
@@ -112,23 +115,85 @@ class StartRunCard extends ConsumerWidget {
                     ),
             ),
           ),
-          PrimaryButtonWidget(
-            text: session.hasStarted
-                ? 'homeScreen.openRun'.tr()
-                : 'homeScreen.startRunning'.tr(),
-            onPressed: onStartRunning,
-            height: 52,
-            borderRadius: 30,
-            backgroundColor: AppColors.primaryButtonColor,
-            textColor: AppColors.defaultPrimaryText,
-            textStyle: AppTextStyles.semiBold().white
-                .s(18)
-                .copyWith(
-                  color: AppColors.defaultPrimaryText,
-                  height: 20 / 18,
-                  letterSpacing: 0,
+          Gap(6),
+          // RunLiveStats(state: session),
+          if (session.hasStarted) ...[
+            Container(
+              padding: EdgeInsets.all(4),
+              decoration: BoxDecoration(
+                color: AppColors.primaryButtonColor.withAlpha(25),
+                borderRadius: BorderRadius.circular(4),
+              ),
+
+              child: RunLiveStats(state: session),
+            ),
+            Gap(14),
+          ] else
+            SizedBox.shrink(),
+
+          if (!session.hasStarted)
+            PrimaryButtonWidget(
+              text: 'runScreen.startRun'.tr(),
+              onPressed: () => RunSessionActions.start(context, ref),
+              height: 52,
+              borderRadius: 30,
+              backgroundColor: AppColors.primaryButtonColor,
+              textColor: AppColors.defaultPrimaryText,
+              textStyle: AppTextStyles.semiBold().white
+                  .s(18)
+                  .copyWith(
+                    color: AppColors.defaultPrimaryText,
+                    height: 20 / 18,
+                    letterSpacing: 0,
+                  ),
+            )
+          else
+            Row(
+              children: [
+                Expanded(
+                  child: PrimaryButtonWidget(
+                    text: session.isRunning
+                        ? 'runScreen.pause'.tr()
+                        : 'runScreen.resume'.tr(),
+                    onPressed: session.isRunning
+                        ? controller.pause
+                        : controller.resume,
+                    isLoading: session.isSaving,
+                    height: 52,
+                    borderRadius: 30,
+                    backgroundColor: AppColors.primaryButtonColor,
+                    textColor: AppColors.defaultPrimaryText,
+                    textStyle: AppTextStyles.semiBold().white
+                        .s(18)
+                        .copyWith(
+                          color: AppColors.defaultPrimaryText,
+                          height: 20 / 18,
+                          letterSpacing: 0,
+                        ),
+                  ),
                 ),
-          ),
+                const Gap(12),
+                Expanded(
+                  child: PrimaryButtonWidget(
+                    text: 'runScreen.end'.tr(),
+                    onPressed: () => RunSessionActions.confirmEnd(context, ref),
+                    isLoading: session.isSaving,
+                    height: 52,
+                    borderRadius: 30,
+                    variant: PrimaryButtonVariant.outlined,
+                    borderColor: AppColors.caloriesIconColor,
+                    textColor: AppColors.caloriesIconColor,
+                    textStyle: AppTextStyles.semiBold().white
+                        .s(18)
+                        .copyWith(
+                          color: AppColors.caloriesIconColor,
+                          height: 20 / 18,
+                          letterSpacing: 0,
+                        ),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );
@@ -256,12 +321,12 @@ class _LastRunSummary extends StatelessWidget {
           style: AppTextStyles.regular()
               .s(10)
               .copyWith(
-                color: AppColors.secondaryText(context),
+                color: AppColors.primaryButtonColor,
                 height: 1,
                 letterSpacing: 0,
               ),
         ),
-        const Gap(8),
+        const Gap(10),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [

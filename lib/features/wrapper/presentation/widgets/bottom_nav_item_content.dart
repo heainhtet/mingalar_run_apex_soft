@@ -29,7 +29,7 @@ class BottomNavItemContent extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           children: [
             icon,
-            const Gap(2),
+            // const Gap(2),
             Text(
               label,
               maxLines: 1,

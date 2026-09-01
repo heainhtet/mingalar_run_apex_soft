@@ -89,7 +89,7 @@ class _LiveStat extends StatelessWidget {
           textAlign: TextAlign.center,
           style: AppTextStyles.regular()
               .s(10)
-              .copyWith(color: AppColors.secondaryText(context), height: 1),
+              .copyWith(color: AppColors.primaryButtonColor, height: 1),
         ),
         const Gap(4),
         Text(
